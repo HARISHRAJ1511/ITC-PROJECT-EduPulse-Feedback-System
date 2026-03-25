@@ -1,0 +1,1996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduPulse — Feedback Intelligence System</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#070B14;--bg2:#0D1220;--card:#141C2E;--card2:#1A2235;--border:#1F2D47;--accent:#3B82F6;--accent2:#6366F1;--teal:#14B8A6;--green:#22C55E;--red:#EF4444;--yellow:#F59E0B;--orange:#F97316;--text:#F0F4FF;--text2:#8B9CC8;--text3:#4A5880;}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;}
+h1,h2,h3,h4,h5{font-family:'Syne',sans-serif;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse 80% 50% at 20% 10%,rgba(59,130,246,.07) 0%,transparent 60%),radial-gradient(ellipse 60% 40% at 80% 80%,rgba(99,102,241,.06) 0%,transparent 50%);}
+
+.screen{display:none;position:fixed;inset:0;z-index:10;overflow-y:auto;background:var(--bg);}
+.screen.active{display:flex;}
+#screen-login{align-items:center;justify-content:center;padding:20px;}
+
+/* LOGIN */
+.login-wrap{width:100%;max-width:440px;}
+.brand{text-align:center;margin-bottom:32px;}
+.brand-logo{width:52px;height:52px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:14px;display:inline-flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:12px;box-shadow:0 0 40px rgba(59,130,246,.3);}
+.brand h1{font-size:32px;font-weight:800;letter-spacing:-1px;}
+.brand h1 span{color:var(--accent);}
+.brand p{color:var(--text2);font-size:14px;margin-top:5px;}
+.role-tabs{display:flex;gap:5px;background:var(--card);border-radius:12px;padding:5px;margin-bottom:20px;border:1px solid var(--border);}
+.role-tab{flex:1;padding:9px 4px;border:none;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:var(--text2);background:transparent;transition:all .2s;}
+.role-tab.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 4px 20px rgba(59,130,246,.3);}
+.login-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:26px;box-shadow:0 24px 80px rgba(0,0,0,.4);}
+.login-card h2{font-size:20px;margin-bottom:3px;}
+.login-card .sub{color:var(--text2);font-size:13px;margin-bottom:20px;}
+.field{margin-bottom:14px;}
+.field label,.form-field label{display:block;font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+.field input,.field select,.field textarea,.form-field input,.form-field select,.form-field textarea{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 13px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none;}
+.field input:focus,.field select:focus,.form-field input:focus,.form-field select:focus,.form-field textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(59,130,246,.1);}
+.field input::placeholder,.form-field input::placeholder,.form-field textarea::placeholder{color:var(--text3);}
+.field select option,.form-field select option{background:var(--bg2);}
+.form-field select:disabled{opacity:.45;cursor:not-allowed;}
+.form-field textarea{resize:vertical;min-height:88px;}
+.btn-primary{width:100%;padding:13px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:10px;color:#fff;font-family:'Syne',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;box-shadow:0 4px 24px rgba(59,130,246,.25);margin-top:6px;}
+.btn-primary:hover{transform:translateY(-1px);}
+.error-msg{color:var(--red);font-size:12px;margin-top:7px;padding:8px 12px;background:rgba(239,68,68,.08);border-radius:8px;border:1px solid rgba(239,68,68,.2);display:none;}
+.demo-creds{margin-top:13px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:11px;}
+.demo-creds p{font-size:11px;color:var(--text3);margin-bottom:7px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;}
+.demo-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;}
+.demo-item{background:var(--card);border-radius:6px;padding:6px 9px;font-size:11px;color:var(--text2);cursor:pointer;border:1px solid transparent;transition:all .15s;}
+.demo-item:hover{background:var(--card2);border-color:var(--border);}
+.demo-item b{color:var(--accent);display:block;font-size:12px;}
+
+/* APP SHELL */
+#screen-student,#screen-teacher,#screen-admin{flex-direction:row;align-items:stretch;}
+.sidebar{width:225px;background:var(--card);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:18px 13px;flex-shrink:0;overflow-y:auto;}
+.sb-brand{display:flex;align-items:center;gap:9px;padding:3px 8px;margin-bottom:20px;}
+.sb-brand .logo{width:32px;height:32px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;}
+.sb-brand span{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;}
+.sb-brand span b{color:var(--accent);}
+.sb-user{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:16px;}
+.sb-av{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;margin-bottom:8px;}
+.av-blue{background:linear-gradient(135deg,var(--accent),var(--accent2));}
+.av-teal{background:linear-gradient(135deg,var(--teal),var(--green));}
+.av-orange{background:linear-gradient(135deg,var(--orange),var(--yellow));}
+.sb-name{font-size:13px;font-weight:600;}
+.sb-role{font-size:11px;color:var(--text2);margin-top:2px;}
+.sb-tag{font-size:11px;margin-top:5px;border-radius:4px;padding:2px 7px;display:inline-block;}
+.t-blue{color:var(--accent);background:rgba(59,130,246,.1);}
+.t-green{color:var(--green);background:rgba(34,197,94,.1);}
+.t-orange{color:var(--orange);background:rgba(249,115,22,.1);}
+.nav-sec{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;font-weight:600;padding:0 8px;margin:10px 0 5px;}
+.nav-item{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:9px;cursor:pointer;font-size:13px;color:var(--text2);transition:all .15s;margin-bottom:2px;border:1px solid transparent;}
+.nav-item:hover{background:var(--card2);color:var(--text);}
+.nav-item.active{background:linear-gradient(135deg,rgba(59,130,246,.13),rgba(99,102,241,.08));color:var(--accent);border-color:rgba(59,130,246,.18);}
+.nav-item .ico{font-size:15px;width:18px;text-align:center;}
+.sb-footer{margin-top:auto;padding-top:14px;}
+.logout-btn{width:100%;padding:9px 12px;background:transparent;border:1px solid var(--border);border-radius:9px;color:var(--text2);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all .15s;}
+.logout-btn:hover{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.25);color:var(--red);}
+.main-area{flex:1;overflow-y:auto;}
+.main-inner{padding:26px 30px;max-width:1060px;width:100%;}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.page-title h2{font-size:23px;font-weight:700;letter-spacing:-.5px;}
+.page-title p{color:var(--text2);font-size:13px;margin-top:3px;}
+
+.sub-page{display:none;}
+.sub-page.active{display:block;animation:fadeUp .22s ease;}
+.slide{display:none;}
+.slide.active{display:block;animation:fadeUp .22s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;}
+
+.btn{padding:9px 18px;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;transition:all .15s;border:none;font-weight:500;}
+.btn-blue{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-family:'Syne',sans-serif;font-weight:600;}
+.btn-blue:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(59,130,246,.3);}
+.btn-blue:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+.btn-ghost{background:var(--card2);border:1px solid var(--border);color:var(--text2);}
+.btn-ghost:hover{background:var(--card);color:var(--text);}
+.btn-red{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.22);color:var(--red);}
+.btn-red:hover{background:rgba(239,68,68,.2);}
+.btn-row{display:flex;gap:10px;justify-content:flex-end;margin-top:16px;}
+
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;}
+.form-grid .full{grid-column:1/-1;}
+
+.badge{font-size:11px;padding:3px 9px;border-radius:20px;font-weight:500;}
+.b-blue{background:rgba(59,130,246,.1);color:var(--accent);border:1px solid rgba(59,130,246,.2);}
+.b-green{background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.2);}
+.b-red{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2);}
+.b-yellow{background:rgba(245,158,11,.1);color:var(--yellow);border:1px solid rgba(245,158,11,.2);}
+.b-purple{background:rgba(99,102,241,.1);color:var(--accent2);border:1px solid rgba(99,102,241,.2);}
+
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;position:relative;overflow:hidden;}
+.stat-card::before{content:'';position:absolute;top:-20px;right:-20px;width:70px;height:70px;border-radius:50%;opacity:.08;}
+.stat-card.blue::before{background:var(--accent);}
+.stat-card.purple::before{background:var(--accent2);}
+.stat-card.green::before{background:var(--green);}
+.stat-card.yellow::before{background:var(--yellow);}
+.stat-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;font-weight:600;margin-bottom:5px;}
+.stat-val{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;}
+.stat-sub{font-size:11px;color:var(--text2);margin-top:3px;}
+
+.fb-item{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:9px;}
+.fb-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;}
+.fb-stu{display:flex;align-items:center;gap:9px;}
+.fb-av{width:29px;height:29px;border-radius:7px;background:linear-gradient(135deg,var(--accent2),var(--teal));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;}
+.fb-nm{font-size:13px;font-weight:600;}
+.fb-rl{font-size:11px;color:var(--text2);}
+.fb-time{font-size:11px;color:var(--text3);}
+.fb-chips{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:7px;}
+.fb-chip{font-size:11px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:3px 7px;color:var(--text2);}
+.fb-chip .v{color:var(--yellow);font-weight:600;}
+.fb-comment{font-size:13px;color:var(--text2);background:var(--bg2);border-radius:8px;padding:8px 11px;border-left:3px solid var(--accent2);font-style:italic;}
+
+.steps{display:flex;align-items:center;margin-bottom:20px;}
+.step{display:flex;align-items:center;gap:7px;}
+.step-c{width:28px;height:28px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--text3);transition:all .3s;}
+.step.on .step-c{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 12px rgba(59,130,246,.4);}
+.step.done .step-c{background:var(--green);border-color:var(--green);color:#fff;}
+.step-lbl{font-size:12px;color:var(--text3);}
+.step.on .step-lbl,.step.done .step-lbl{color:var(--text);}
+.step-line{flex:1;height:1px;background:var(--border);margin:0 6px;}
+
+.sel-summary{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:13px 15px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+.sel-tags{display:flex;flex-wrap:wrap;gap:7px;}
+.sel-tag{display:flex;align-items:center;gap:5px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:12px;color:var(--text2);}
+.sel-tag b{color:var(--text);font-weight:600;}
+
+.q-item{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:9px;}
+.q-num{font-size:11px;color:var(--accent);font-weight:600;margin-bottom:3px;}
+.q-text{font-size:14px;font-weight:500;margin-bottom:11px;}
+.stars{display:flex;gap:5px;}
+.star-btn{width:32px;height:32px;border-radius:8px;border:1px solid var(--border);background:var(--bg2);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.star-btn:hover{background:rgba(245,158,11,.1);border-color:var(--yellow);transform:scale(1.1);}
+.star-btn.sel{background:rgba(245,158,11,.15);border-color:var(--yellow);}
+
+.perf-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.perf-item{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:10px;}
+.perf-av{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;}
+.perf-av.good{background:rgba(34,197,94,.15);color:var(--green);}
+.perf-av.weak{background:rgba(239,68,68,.15);color:var(--red);}
+.perf-nm{font-size:13px;font-weight:600;}
+.perf-sc{font-size:11px;color:var(--text2);margin-top:2px;}
+.perf-bar{flex:1;height:4px;background:var(--bg2);border-radius:2px;overflow:hidden;}
+.perf-fill{height:100%;border-radius:2px;transition:width .5s;}
+.perf-fill.good{background:var(--green);}
+.perf-fill.avg{background:var(--yellow);}
+.perf-fill.weak{background:var(--red);}
+
+/* FILTER BAR */
+.filter-bar{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:13px 15px;margin-bottom:18px;display:flex;gap:11px;flex-wrap:wrap;align-items:flex-end;}
+.filter-bar .form-field{flex:1;min-width:130px;margin:0;}
+.filter-bar .form-field label{font-size:10px;margin-bottom:5px;}
+.filter-bar .form-field select{padding:7px 11px;font-size:13px;}
+.filter-bar .btn{align-self:flex-end;height:35px;padding:0 13px;font-size:12px;}
+
+/* year-auto info */
+.year-auto-note{font-size:11px;color:var(--teal);margin-top:4px;display:none;}
+
+/* AI */
+.ai-box{background:linear-gradient(135deg,rgba(59,130,246,.04),rgba(99,102,241,.04));border:1px solid rgba(59,130,246,.18);border-radius:16px;padding:22px;}
+.ai-hdr{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+.ai-ico{width:36px;height:36px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.ai-hdr h3{font-size:15px;font-weight:700;}
+.ai-hdr p{font-size:12px;color:var(--text2);}
+.ai-section{margin-bottom:20px;}
+.ai-section-title{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--accent);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid rgba(59,130,246,.15);}
+.ai-point{display:flex;gap:10px;margin-bottom:8px;align-items:flex-start;}
+.ai-bullet{width:7px;height:7px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:5px;}
+.ai-bullet.red{background:var(--red);}
+.ai-bullet.green{background:var(--green);}
+.ai-bullet.yellow{background:var(--yellow);}
+.ai-point-text{font-size:13px;color:var(--text2);line-height:1.65;}
+.ai-point-text b{color:var(--text);}
+.ai-topic-chip{display:inline-block;background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.2);color:var(--accent2);border-radius:6px;padding:2px 8px;font-size:11px;font-weight:600;margin:3px 3px 0 0;}
+.ai-num-badge{width:20px;height:20px;border-radius:50%;background:var(--accent2);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0;margin-top:2px;}
+
+/* ADMIN TABLES */
+.add-form{background:var(--card2);border:1px solid var(--border);border-radius:13px;padding:18px;margin-bottom:18px;}
+.add-form h4{font-size:14px;font-weight:700;margin-bottom:14px;color:var(--accent);}
+.inline-form{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;}
+.inline-form .form-field{flex:1;min-width:140px;margin:0;}
+.data-table{width:100%;border-collapse:collapse;}
+.data-table th{text-align:left;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;padding:10px 13px;border-bottom:1px solid var(--border);}
+.data-table td{padding:11px 13px;font-size:13px;border-bottom:1px solid rgba(31,45,71,.5);vertical-align:middle;}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table tbody tr:hover td{background:rgba(255,255,255,.012);}
+.drag-handle{cursor:grab;color:var(--text3);font-size:15px;padding:2px 4px;user-select:none;display:inline-block;transition:color .15s;}
+.drag-handle:hover{color:var(--accent);}
+tr.dragging td{opacity:.3;}
+tr.drag-over-top td{box-shadow:inset 0 2px 0 var(--accent);}
+tr.drag-over-bot td{box-shadow:inset 0 -2px 0 var(--accent);}
+
+.mini-chart{display:flex;align-items:flex-end;gap:8px;height:75px;margin-top:10px;}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;}
+.bar-fill{width:100%;border-radius:4px 4px 0 0;background:linear-gradient(180deg,var(--accent),var(--accent2));min-height:3px;transition:height .6s;}
+.bar-lbl{font-size:9px;color:var(--text3);}
+.bar-val{font-size:10px;color:var(--text2);}
+
+.dots{display:inline-flex;gap:4px;align-items:center;}
+.dots span{width:6px;height:6px;background:var(--accent);border-radius:50%;animation:bonce .8s infinite;}
+.dots span:nth-child(2){animation-delay:.15s;}
+.dots span:nth-child(3){animation-delay:.3s;}
+@keyframes bonce{0%,80%,100%{transform:scale(.7);opacity:.5}40%{transform:scale(1);opacity:1}}
+
+.toast{position:fixed;bottom:20px;right:20px;background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:12px 17px;font-size:13px;z-index:9999;transform:translateY(70px);opacity:0;transition:all .3s;box-shadow:0 12px 40px rgba(0,0,0,.4);max-width:320px;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.ok{border-color:rgba(34,197,94,.3);}
+.toast.err{border-color:rgba(239,68,68,.3);}
+
+/* CONFIRM MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:300;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:24px;width:100%;max-width:430px;box-shadow:0 30px 80px rgba(0,0,0,.5);}
+.modal h3{font-size:17px;margin-bottom:14px;}
+.modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:16px;}
+/* confirm modal specific */
+.confirm-modal{max-width:370px;}
+.confirm-modal h3{font-size:16px;}
+.confirm-modal p{font-size:13px;color:var(--text2);margin-bottom:2px;}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.full-row{margin-top:16px;}
+.atab{padding:7px 16px;border-radius:7px;border:none;background:transparent;color:var(--text2);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;transition:all .15s;}
+.atab.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;}
+.empty-state{text-align:center;padding:32px 20px;color:var(--text2);font-size:13px;}
+.empty-state .eico{font-size:32px;margin-bottom:10px;}
+
+@media(max-width:768px){.sidebar{display:none;}.stats-row{grid-template-columns:1fr 1fr;}.two-col,.perf-grid,.form-grid{grid-template-columns:1fr;}.main-inner{padding:14px;}}
+</style>
+</head>
+<body>
+
+<!-- ═══ LOGIN ═══ -->
+<div id="screen-login" class="screen active">
+  <div class="login-wrap">
+    <div class="brand">
+      <div class="brand-logo">🎓</div>
+      <h1>Edu<span>Pulse</span></h1>
+      <p>Student Feedback Intelligence System</p>
+    </div>
+    <div class="role-tabs">
+      <button class="role-tab active" onclick="switchRole('student')">🎒 Student</button>
+      <button class="role-tab" onclick="switchRole('teacher')">👨‍🏫 Teacher</button>
+      <button class="role-tab" onclick="switchRole('admin')">🛡️ Admin</button>
+    </div>
+    <div class="login-card">
+      <h2 id="lTitle">Student Login</h2>
+      <p class="sub" id="lSub">Submit feedback for your subjects</p>
+      <div class="field"><label>Username / Roll No</label><input type="text" id="lUser" placeholder="Enter username"></div>
+      <div class="field"><label>Password</label><input type="password" id="lPass" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <div class="error-msg" id="lErr">❌ Invalid credentials</div>
+      <button class="btn-primary" onclick="doLogin()">Login →</button>
+      <div class="demo-creds"><p>Demo Credentials — click to fill</p><div class="demo-grid" id="demoCreds"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ STUDENT ═══ -->
+<div id="screen-student" class="screen">
+  <div class="sidebar">
+    <div class="sb-brand"><div class="logo">🎓</div><span>Edu<b>Pulse</b></span></div>
+    <div class="sb-user"><div class="sb-av av-blue" id="stu-av">A</div><div class="sb-name" id="stu-nm">Student</div><div class="sb-role">Student</div><div class="sb-tag t-blue" id="stu-dept">CSE</div></div>
+    <div class="nav-sec">Menu</div>
+    <div class="nav-item active" onclick="stuNav('feedback',this)"><span class="ico">📝</span> Submit Feedback</div>
+    <div class="nav-item" onclick="stuNav('history',this)"><span class="ico">📋</span> My Submissions</div>
+    <div class="sb-footer"><button class="logout-btn" onclick="logout()">🚪 &nbsp;Logout</button></div>
+  </div>
+  <div class="main-area"><div class="main-inner">
+    <div id="stu-feedback" class="sub-page active">
+      <div class="topbar"><div class="page-title"><h2>Submit Feedback</h2><p>Visible only to the respective teacher</p></div></div>
+      <div class="steps">
+        <div class="step on" id="stp1"><div class="step-c">1</div><div class="step-lbl">Select</div></div>
+        <div class="step-line"></div>
+        <div class="step" id="stp2"><div class="step-c">2</div><div class="step-lbl">Rate</div></div>
+      </div>
+      <!-- SLIDE 1: SELECT -->
+      <div class="slide active" id="sl1">
+        <div class="card">
+          <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:18px">Select Details</div>
+          <div class="form-grid">
+            <div class="form-field"><label>Department</label>
+              <select id="sel-dept" onchange="onStuDeptChange()"><option value="">— Select Department —</option></select>
+            </div>
+            <div class="form-field"><label>Class Year</label>
+              <select id="sel-class" onchange="onStuClassChange()" disabled><option value="">— Select Class —</option></select>
+            </div>
+            <div class="form-field"><label>Academic Year</label>
+              <input type="text" id="sel-acyear" readonly style="background:var(--bg2);cursor:not-allowed;opacity:.8" placeholder="Auto-filled when class is selected">
+            </div>
+            <div class="form-field"><label>Subject</label>
+              <select id="sel-subj" onchange="onStuSubjChange()" disabled><option value="">— Select Subject —</option></select>
+            </div>
+            <div class="form-field full"><label>Staff / Teacher</label>
+              <select id="sel-staff" disabled><option value="">— Select Staff —</option></select>
+            </div>
+          </div>
+          <div class="btn-row"><button class="btn btn-blue" onclick="goToRate()">Proceed to Rate →</button></div>
+        </div>
+      </div>
+      <!-- SLIDE 2: RATE -->
+      <div class="slide" id="sl2">
+        <div class="card">
+          <div class="sel-summary">
+            <div class="sel-tags" id="sel-summary-tags"></div>
+            <button class="btn btn-ghost" style="font-size:12px;padding:6px 14px" onclick="goBackToSelect()">✏️ Change</button>
+          </div>
+          <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:14px">Rate Your Experience</div>
+          <div id="q-container"></div>
+          <div class="form-field full" style="margin-top:10px">
+            <label>Comments <span style="color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0">(optional — mention specific topics)</span></label>
+            <textarea id="fb-comment" placeholder="Mention specific topics, teaching style, suggestions..."></textarea>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-blue" id="submit-fb-btn" onclick="submitFeedback()">Submit Feedback ✓</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="stu-history" class="sub-page">
+      <div class="topbar"><div class="page-title"><h2>My Submissions</h2><p>All feedback you have submitted</p></div></div>
+      <div id="stu-hist-list"></div>
+    </div>
+  </div></div>
+</div>
+
+<!-- ═══ TEACHER ═══ -->
+<div id="screen-teacher" class="screen">
+  <div class="sidebar">
+    <div class="sb-brand"><div class="logo">🎓</div><span>Edu<b>Pulse</b></span></div>
+    <div class="sb-user"><div class="sb-av av-teal" id="tea-av">T</div><div class="sb-name" id="tea-nm">Teacher</div><div class="sb-role">Faculty</div><div class="sb-tag t-green" id="tea-dept">CSE</div></div>
+    <div class="nav-sec">Dashboard</div>
+    <div class="nav-item active" onclick="teaNav('overview',this)"><span class="ico">📊</span> Overview</div>
+    <div class="nav-item" onclick="teaNav('feedbacks',this)"><span class="ico">💬</span> Feedback Received</div>
+    <div class="nav-item" onclick="teaNav('students',this)"><span class="ico">👥</span> Student Performance</div>
+    <div class="nav-item" onclick="teaNav('ai',this)"><span class="ico">🤖</span> AI Analysis</div>
+    <div class="sb-footer"><button class="logout-btn" onclick="logout()">🚪 &nbsp;Logout</button></div>
+  </div>
+  <div class="main-area"><div class="main-inner">
+
+    <div id="tea-overview" class="sub-page active">
+      <div class="topbar"><div class="page-title"><h2 id="tea-welcome">Hello 👋</h2><p>Summary of your feedback</p></div></div>
+      <div class="filter-bar">
+        <div class="form-field"><label>Class Year</label><select id="ov-f-class" onchange="onTeaClassFilterChange('ov');renderOverview()"><option value="">All Classes</option></select></div>
+        <div class="form-field"><label>Academic Year</label><input type="text" id="ov-f-year" readonly style="background:var(--bg2);cursor:not-allowed;opacity:.8" placeholder="Auto-filled when class selected"></div>
+        <div class="form-field"><label>Subject</label><select id="ov-f-subj" onchange="renderOverview()"><option value="">All Subjects</option></select></div>
+        <button class="btn btn-ghost" onclick="clearFilter('ov')">✕ Clear</button>
+      </div>
+      <div class="stats-row">
+        <div class="stat-card blue"><div class="stat-label">Total Feedback</div><div class="stat-val" id="t-total">0</div></div>
+        <div class="stat-card green"><div class="stat-label">Avg Rating</div><div class="stat-val" id="t-avg">—</div></div>
+        <div class="stat-card purple"><div class="stat-label">Positive</div><div class="stat-val" id="t-pos">0%</div></div>
+        <div class="stat-card yellow"><div class="stat-label">Subjects</div><div class="stat-val" id="t-subj">0</div></div>
+      </div>
+      <div class="two-col">
+        <div class="card"><div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:4px">Rating by Category</div><div class="mini-chart" id="ov-chart"></div></div>
+        <div class="card"><div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:12px">Recent Feedback</div><div id="ov-recent"></div></div>
+      </div>
+      <div class="full-row"><div class="card">
+        <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:14px">Sentiment Breakdown</div>
+        <div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap">
+          <div style="text-align:center;padding:12px"><div style="font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:var(--green)" id="s-pos">0</div><div style="font-size:11px;color:var(--text2);margin-top:3px">✅ Positive</div></div>
+          <div style="text-align:center;padding:12px"><div style="font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:var(--text2)" id="s-neu">0</div><div style="font-size:11px;color:var(--text2);margin-top:3px">➖ Neutral</div></div>
+          <div style="text-align:center;padding:12px"><div style="font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:var(--red)" id="s-neg">0</div><div style="font-size:11px;color:var(--text2);margin-top:3px">❌ Negative</div></div>
+          <div style="flex:1;min-width:160px">
+            <div style="height:8px;background:var(--bg2);border-radius:4px;overflow:hidden;display:flex">
+              <div id="sb-pos" style="height:100%;background:var(--green);transition:width .5s"></div>
+              <div id="sb-neu" style="height:100%;background:var(--text3);transition:width .5s"></div>
+              <div id="sb-neg" style="height:100%;background:var(--red);transition:width .5s"></div>
+            </div>
+            <div style="font-size:11px;color:var(--text3);margin-top:5px">Sentiment distribution</div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <div id="tea-feedbacks" class="sub-page">
+      <div class="topbar"><div class="page-title"><h2>Feedback Received</h2><p>Only your subjects' feedback</p></div></div>
+      <div class="filter-bar">
+        <div class="form-field"><label>Class Year</label><select id="fb-f-class" onchange="onTeaClassFilterChange('fb');renderFbList()"><option value="">All Classes</option></select></div>
+        <div class="form-field"><label>Academic Year</label><input type="text" id="fb-f-year" readonly style="background:var(--bg2);cursor:not-allowed;opacity:.8" placeholder="Auto-filled when class selected"></div>
+        <div class="form-field"><label>Subject</label><select id="fb-f-subj" onchange="renderFbList()"><option value="">All Subjects</option></select></div>
+        <div class="form-field"><label>Sentiment</label>
+          <select id="fb-f-sent" onchange="renderFbList()">
+            <option value="">All</option><option value="pos">✅ Positive</option><option value="neu">➖ Neutral</option><option value="neg">❌ Negative</option>
+          </select>
+        </div>
+        <button class="btn btn-ghost" onclick="clearFilter('fb')">✕ Clear</button>
+      </div>
+      <div id="fb-list"></div>
+    </div>
+
+    <div id="tea-students" class="sub-page">
+      <div class="topbar"><div class="page-title"><h2>Student Performance</h2><p>Based on feedback ratings</p></div></div>
+      <div class="filter-bar">
+        <div class="form-field"><label>Class Year</label><select id="st-f-class" onchange="onTeaClassFilterChange('st');renderPerf(currentPerfFilter)"><option value="">All Classes</option></select></div>
+        <div class="form-field"><label>Academic Year</label><input type="text" id="st-f-year" readonly style="background:var(--bg2);cursor:not-allowed;opacity:.8" placeholder="Auto-filled when class selected"></div>
+        <div class="form-field"><label>Subject</label><select id="st-f-subj" onchange="renderPerf(currentPerfFilter)"><option value="">All Subjects</option></select></div>
+        <button class="btn btn-ghost" onclick="clearFilter('st')">✕ Clear</button>
+      </div>
+      <div style="display:flex;gap:4px;background:var(--card);border-radius:10px;padding:4px;border:1px solid var(--border);margin-bottom:16px;width:fit-content;">
+        <button class="atab active" onclick="perfFilter('all',this)">All</button>
+        <button class="atab" onclick="perfFilter('good',this)">🟢 Good</button>
+        <button class="atab" onclick="perfFilter('weak',this)">🔴 Needs Attention</button>
+      </div>
+      <div class="perf-grid" id="perf-list"></div>
+    </div>
+
+    <div id="tea-ai" class="sub-page">
+      <div class="topbar"><div class="page-title"><h2>AI Analysis</h2><p>Structured insights by Claude AI</p></div></div>
+      <div class="filter-bar" style="margin-bottom:16px">
+        <div class="form-field"><label>Class Year</label><select id="ai-f-class" onchange="onTeaClassFilterChange('ai')"><option value="">All Classes</option></select></div>
+        <div class="form-field"><label>Academic Year</label><input type="text" id="ai-f-year" readonly style="background:var(--bg2);cursor:not-allowed;opacity:.8" placeholder="Auto-filled when class selected"></div>
+        <div class="form-field"><label>Subject</label><select id="ai-f-subj"><option value="">All Subjects</option></select></div>
+      </div>
+      <div class="ai-box">
+        <div class="ai-hdr">
+          <div class="ai-ico">📊</div>
+          <div style="flex:1"><h3>Automated Feedback Analysis System</h3><p>AI-powered pedagogical insights derived from student feedback patterns</p></div>
+          <button class="btn btn-blue" id="ai-btn" onclick="runAI()">Generate Report</button>
+        </div>
+        <div id="ai-load" style="display:none;text-align:center;padding:28px"><div class="dots"><span></span><span></span><span></span></div><p style="margin-top:10px;color:var(--text2);font-size:13px">Analyzing feedback with intelligent NLP...</p></div>
+        <div id="ai-out" style="display:none"><hr style="border-color:var(--border);margin-bottom:18px"><div id="ai-structured"></div></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ═══ ADMIN ═══ -->
+<div id="screen-admin" class="screen">
+  <div class="sidebar">
+    <div class="sb-brand"><div class="logo">🎓</div><span>Edu<b>Pulse</b></span></div>
+    <div class="sb-user"><div class="sb-av av-orange">🛡️</div><div class="sb-name">Administrator</div><div class="sb-role">System Admin</div><div class="sb-tag t-orange">Admin</div></div>
+    <div class="nav-sec">Management</div>
+    <div class="nav-item active" onclick="admNav('depts',this)"><span class="ico">🏛️</span> Departments</div>
+    <div class="nav-item" onclick="admNav('classes',this)"><span class="ico">🏫</span> Class Years</div>
+    <div class="nav-item" onclick="admNav('years',this)"><span class="ico">📅</span> Academic Years</div>
+    <div class="nav-item" onclick="admNav('subjects',this)"><span class="ico">📚</span> Subjects</div>
+    <div class="nav-item" onclick="admNav('staff',this)"><span class="ico">👨‍🏫</span> Staff</div>
+    <div class="nav-item" onclick="admNav('accounts',this)"><span class="ico">🔑</span> Student Accounts</div>
+    <div class="nav-item" onclick="admNav('stats',this)"><span class="ico">📊</span> System Stats</div>
+    <div class="sb-footer"><button class="logout-btn" onclick="logout()">🚪 &nbsp;Logout</button></div>
+  </div>
+  <div class="main-area"><div class="main-inner">
+
+    <div id="adm-depts" class="sub-page active">
+      <div class="topbar"><div class="page-title"><h2>Departments</h2><p>Drag ⠿ to reorder — reflects everywhere</p></div></div>
+      <div class="add-form"><h4>➕ Add Department</h4>
+        <div class="inline-form">
+          <div class="form-field"><label>Department Name</label><input type="text" id="nd-name" placeholder="e.g. Information Technology"></div>
+          <div class="form-field"><label>Short Code</label><input type="text" id="nd-code" placeholder="e.g. IT" maxlength="8"></div>
+          <button class="btn btn-blue" onclick="addDept()" style="height:41px;align-self:flex-end">Add</button>
+        </div>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden">
+        <table class="data-table"><thead><tr><th style="width:30px"></th><th style="width:28px">#</th><th>Department</th><th>Code</th><th>Subjects</th><th>Staff</th><th>Actions</th></tr></thead>
+        <tbody id="dept-tbody"></tbody></table>
+      </div>
+    </div>
+
+    <!-- CLASS YEARS -->
+    <div id="adm-classes" class="sub-page">
+      <div class="topbar"><div class="page-title"><h2>Class Years</h2><p>I Year, II Year etc. — each linked to an Academic Year</p></div></div>
+      <div class="add-form"><h4>➕ Add Class Year</h4>
+        <div class="inline-form">
+          <div class="form-field"><label>Class Name</label><input type="text" id="ncl-name" placeholder="e.g. I Year, II Year"></div>
+          <div class="form-field"><label>Link to Academic Year</label><select id="ncl-year"><option value="">— Select Academic Year —</option></select></div>
+          <button class="btn btn-blue" onclick="addClass()" style="height:41px;align-self:flex-end">Add</button>
+        </div>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden">
+        <table class="data-table"><thead><tr><th style="width:30px"></th><th style="width:28px">#</th><th>Class</th><th>Linked Academic Year</th><th>Feedback Count</th><th>Actions</th></tr></thead>
+        <tbody id="class-tbody"></tbody></table>
+      </div>
+    </div>
+
+    <!-- ACADEMIC YEARS -->
+    <div id="adm-years" class="sub-page">
+      <div class="topbar"><div class="page-title"><h2>Academic Years</h2><p>e.g. 2024-25, 2023-24</p></div></div>
+      <div class="add-form"><h4>➕ Add Academic Year</h4>
+        <div class="inline-form">
+          <div class="form-field"><label>Year Label</label><input type="text" id="ny-name" placeholder="e.g. 2024-25"></div>
+          <button class="btn btn-blue" onclick="addYear()" style="height:41px;align-self:flex-end">Add</button>
+        </div>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden">
+        <table class="data-table"><thead><tr><th style="width:30px"></th><th style="width:28px">#</th><th>Academic Year</th><th>Linked Classes</th><th>Feedback</th><th>Actions</th></tr></thead>
+        <tbody id="year-tbody"></tbody></table>
+      </div>
+    </div>
+
+    <!-- SUBJECTS -->
+    <div id="adm-subjects" class="sub-page">
+      <div class="topbar"><div class="page-title"><h2>Subjects</h2><p>Organize subjects by department and class year. Assign staff in the Staff section.</p></div></div>
+      <div class="add-form"><h4>➕ Add Subject</h4>
+        <div class="inline-form" style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;align-items:flex-end">
+          <div class="form-field"><label>Department</label><select id="ns-dept" onchange="onSubjDeptChange()"><option value="">— Select —</option></select></div>
+          <div class="form-field"><label>Class Year</label><select id="ns-year"><option value="">— Select —</option></select></div>
+          <div class="form-field"><label>Subject Name</label><input type="text" id="ns-name" placeholder="e.g. Data Structures"></div>
+          <button class="btn btn-blue" onclick="addSubject()" style="height:41px">Add</button>
+        </div>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden">
+        <table class="data-table"><thead><tr><th style="width:30px"></th><th style="width:28px">#</th><th>Subject</th><th>Department</th><th>Class Year</th><th>Assigned Staff</th><th>Actions</th></tr></thead>
+        <tbody id="subj-tbody"></tbody></table>
+      </div>
+    </div>
+
+    <!-- STAFF -->
+    <div id="adm-staff" class="sub-page">
+      <div class="topbar"><div class="page-title"><h2>Staff</h2><p>Set login credentials and subject assignments</p></div></div>
+      <div class="add-form"><h4>➕ Add Staff</h4>
+        <div class="form-grid" style="margin-bottom:12px">
+          <div class="form-field"><label>Full Name</label><input type="text" id="nst-name" placeholder="e.g. Dr. Raj Kumar"></div>
+          <div class="form-field"><label>Username (login)</label><input type="text" id="nst-user" placeholder="e.g. drraj"></div>
+          <div class="form-field"><label>Password</label><input type="text" id="nst-pass" value="teach123"></div>
+          <div class="form-field"><label>Department</label><select id="nst-dept" onchange="loadStaffSubjSel()"><option value="">— Select —</option></select></div>
+          <div class="form-field full"><label>Assign Subjects (Ctrl/Cmd for multiple)</label>
+            <select id="nst-subjs" multiple style="min-height:80px;background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:8px;color:var(--text);width:100%;outline:none;font-family:'DM Sans',sans-serif;font-size:13px;"><option disabled>Select department first</option></select>
+          </div>
+        </div>
+        <button class="btn btn-blue" onclick="addStaff()">Add Staff Member</button>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden">
+        <table class="data-table"><thead><tr><th style="width:30px"></th><th style="width:28px">#</th><th>Name</th><th>Username</th><th>Dept</th><th>Subjects</th><th>Actions</th></tr></thead>
+        <tbody id="staff-tbody"></tbody></table>
+      </div>
+    </div>
+
+    <!-- ACCOUNTS -->
+    <div id="adm-accounts" class="sub-page">
+      <div class="topbar"><div class="page-title"><h2>Student Accounts</h2><p>Manage student login credentials</p></div></div>
+      <div class="add-form"><h4>➕ Add Student</h4>
+        <div class="form-grid" style="margin-bottom:12px">
+          <div class="form-field"><label>Full Name</label><input type="text" id="nstu-name" placeholder="e.g. Arjun Mohan"></div>
+          <div class="form-field"><label>Roll Number (username)</label><input type="text" id="nstu-roll" placeholder="e.g. 21CSE001"></div>
+          <div class="form-field"><label>Password</label><input type="text" id="nstu-pass" value="pass123"></div>
+          <div class="form-field"><label>Department</label><select id="nstu-dept"><option value="">— Select —</option></select></div>
+        </div>
+        <button class="btn btn-blue" onclick="addStudent()">Add Student</button>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden">
+        <table class="data-table"><thead><tr><th style="width:30px"></th><th style="width:28px">#</th><th>Name</th><th>Roll No</th><th>Dept</th><th>Actions</th></tr></thead>
+        <tbody id="acct-tbody"></tbody></table>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div id="adm-stats" class="sub-page">
+      <div class="topbar"><div class="page-title"><h2>System Statistics</h2><p>All feedback across the system</p></div></div>
+      <div class="stats-row">
+        <div class="stat-card blue"><div class="stat-label">Total Feedback</div><div class="stat-val" id="adm-tfb">0</div></div>
+        <div class="stat-card green"><div class="stat-label">Students</div><div class="stat-val" id="adm-tstu">0</div></div>
+        <div class="stat-card purple"><div class="stat-label">Staff</div><div class="stat-val" id="adm-tstaff">0</div></div>
+        <div class="stat-card yellow"><div class="stat-label">Departments</div><div class="stat-val" id="adm-tdept">0</div></div>
+      </div>
+      <div class="card"><div id="adm-fb-all"></div></div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal"><h3 id="modal-title">Edit</h3><div id="modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-blue" id="modal-save-btn">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM MODAL (replaces confirm() which is blocked in iframes) -->
+<div class="modal-overlay" id="confirm-modal">
+  <div class="modal confirm-modal">
+    <h3 id="confirm-title">Confirm Delete</h3>
+    <p id="confirm-msg">Are you sure?</p>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeConfirm()">Cancel</button>
+      <button class="btn btn-red" id="confirm-ok-btn">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ════════════════════════════
+// STORAGE
+// ════════════════════════════
+let _mem={};
+function sGet(k){try{const r=localStorage.getItem(k);if(r!==null)return JSON.parse(r);}catch(e){}return _mem[k]??null;}
+function sSet(k,v){_mem[k]=v;try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+
+function initData(){
+  if(sGet('ep_v6'))return;
+  sSet('ep_depts',[
+    {id:'d1',name:'Artificial Intelligence and Data Science',code:'AIDS'},
+    {id:'d2',name:'Civil Engineering',code:'CIVIL'},
+    {id:'d3',name:'Computer Science Engineering',code:'CSE'},
+    {id:'d4',name:'Electrical and Electronics Engineering',code:'EEE'},
+    {id:'d5',name:'Electronics and Communication Engineering',code:'ECE'},
+    {id:'d6',name:'Information Technology',code:'IT'},
+    {id:'d7',name:'Mechanical Engineering',code:'MECH'}
+  ]);
+  sSet('ep_years',[
+    {id:'y1',name:'2024-25'},
+    {id:'y2',name:'2023-24'},
+    {id:'y3',name:'2022-23'},
+    {id:'y4',name:'2021-22'}
+  ]);
+  sSet('ep_classes',[
+    {id:'c1',name:'I Year',yearId:'y1'},
+    {id:'c2',name:'II Year',yearId:'y2'},
+    {id:'c3',name:'III Year',yearId:'y3'},
+    {id:'c4',name:'IV Year',yearId:'y4'}
+  ]);
+  sSet('ep_subjects',[
+    // AIDS 2nd Year ONLY
+    {id:'s1',name:'Design and Analysis of Algorithms',deptId:'d1',yearId:'y2'},
+    {id:'s2',name:'Operating Systems',deptId:'d1',yearId:'y2'},
+    {id:'s3',name:'Machine Learning',deptId:'d1',yearId:'y2'},
+    {id:'s4',name:'Data Security and Privacy',deptId:'d1',yearId:'y2'},
+    {id:'s5',name:'Software Engineering Practices',deptId:'d1',yearId:'y2'},
+    {id:'s6',name:'Universal Human Values-II',deptId:'d1',yearId:'y2'},
+    {id:'s7',name:'Operating Systems Lab',deptId:'d1',yearId:'y2'},
+    {id:'s8',name:'AWS ML Foundation',deptId:'d1',yearId:'y2'},
+    {id:'s9',name:'NPTEL Data Science',deptId:'d1',yearId:'y2'},
+    // CSE 1st Year
+    {id:'s20',name:'Web Development Fundamentals',deptId:'d3',yearId:'y1'},
+    {id:'s21',name:'Python Basics',deptId:'d3',yearId:'y1'},
+    {id:'s22',name:'Database Fundamentals',deptId:'d3',yearId:'y1'},
+    // CSE 2nd Year
+    {id:'s23',name:'Advanced Algorithms',deptId:'d3',yearId:'y2'},
+    {id:'s24',name:'Cloud Computing',deptId:'d3',yearId:'y2'},
+    {id:'s25',name:'Software Testing',deptId:'d3',yearId:'y2'},
+    // Civil 1st Year
+    {id:'s30',name:'Structural Design Basics',deptId:'d2',yearId:'y1'},
+    {id:'s31',name:'Material Science',deptId:'d2',yearId:'y1'},
+    // Civil 2nd Year
+    {id:'s32',name:'Geotechnical Engineering',deptId:'d2',yearId:'y2'},
+    {id:'s33',name:'Water Resources',deptId:'d2',yearId:'y2'},
+    // EEE 1st Year  
+    {id:'s40',name:'Power Systems Basics',deptId:'d4',yearId:'y1'},
+    {id:'s41',name:'Electric CircuitsFoundations',deptId:'d4',yearId:'y1'},
+    // EEE 2nd Year
+    {id:'s42',name:'Electrical Machines',deptId:'d4',yearId:'y2'},
+    {id:'s43',name:'Power Electronics',deptId:'d4',yearId:'y2'},
+    // ECE 1st Year
+    {id:'s50',name:'Digital Signal Processing',deptId:'d5',yearId:'y1'},
+    {id:'s51',name:'VLSI Design Basics',deptId:'d5',yearId:'y1'},
+    // ECE 2nd Year
+    {id:'s52',name:'Microprocessors',deptId:'d5',yearId:'y2'},
+    {id:'s53',name:'Communication Systems',deptId:'d5',yearId:'y2'},
+    // IT 1st Year
+    {id:'s60',name:'Enterprise Java',deptId:'d6',yearId:'y1'},
+    {id:'s61',name:'Mobile App Development',deptId:'d6',yearId:'y1'},
+    // IT 2nd Year
+    {id:'s62',name:'Big Data Analytics',deptId:'d6',yearId:'y2'},
+    {id:'s63',name:'Network Security',deptId:'d6',yearId:'y2'},
+    // Mechanical 1st Year
+    {id:'s70',name:'Mechanical Design',deptId:'d7',yearId:'y1'},
+    {id:'s71',name:'Thermodynamics',deptId:'d7',yearId:'y1'},
+    // Mechanical 2nd Year
+    {id:'s72',name:'Fluid Mechanics',deptId:'d7',yearId:'y2'},
+    {id:'s73',name:'Heat Transfer',deptId:'d7',yearId:'y2'}
+  ]);
+  sSet('ep_staff',[
+    // AIDS (6 staff - ONLY FOR AIDS)
+    {id:'t1',name:'Ms. T. Sindhu',username:'ms_tsindhu',password:'teach123',deptId:'d1',subjectIds:['s1']},
+    {id:'t2',name:'Mr. D. Rajkumar',username:'mr_drajkumar',password:'teach123',deptId:'d1',subjectIds:['s2','s7']},
+    {id:'t3',name:'Ms. S. Nirmala',username:'ms_snirmala',password:'teach123',deptId:'d1',subjectIds:['s3','s9']},
+    {id:'t4',name:'Ms. V. Gayathri',username:'ms_vgayathri',password:'teach123',deptId:'d1',subjectIds:['s4','s8']},
+    {id:'t5',name:'Ms. B. Sangeetha',username:'ms_bsangeetha',password:'teach123',deptId:'d1',subjectIds:['s5']},
+    {id:'t6',name:'Ms. S. Deepika',username:'ms_sdeepika',password:'teach123',deptId:'d1',subjectIds:['s6']},
+    // CIVIL (4 staff)
+    {id:'t7',name:'Dr. E. Nair',username:'dr_enair',password:'teach123',deptId:'d2',subjectIds:['s30']},
+    {id:'t8',name:'Mr. F. Sinha',username:'mr_fsinha',password:'teach123',deptId:'d2',subjectIds:['s31']},
+    {id:'t9',name:'Ms. G. Bhat',username:'ms_gbhat',password:'teach123',deptId:'d2',subjectIds:['s32']},
+    {id:'t10',name:'Prof. H. Malik',username:'prof_hmalik',password:'teach123',deptId:'d2',subjectIds:['s33']},
+    // CSE (6 staff)
+    {id:'t11',name:'Mr. P. Kumar',username:'mr_pkumar',password:'teach123',deptId:'d3',subjectIds:['s20']},
+    {id:'t12',name:'Ms. R. Sharma',username:'ms_rsharma',password:'teach123',deptId:'d3',subjectIds:['s21']},
+    {id:'t13',name:'Dr. A. Singh',username:'dr_asingh',password:'teach123',deptId:'d3',subjectIds:['s22']},
+    {id:'t14',name:'Ms. L. Patel',username:'ms_lpatel',password:'teach123',deptId:'d3',subjectIds:['s23']},
+    {id:'t15',name:'Mr. V. Reddy',username:'mr_vreddy',password:'teach123',deptId:'d3',subjectIds:['s24']},
+    {id:'t16',name:'Ms. M. Joseph',username:'ms_mjoseph',password:'teach123',deptId:'d3',subjectIds:['s25']},
+    // EEE (4 staff)
+    {id:'t17',name:'Dr. K. Subramanian',username:'dr_ksubramanian',password:'teach123',deptId:'d4',subjectIds:['s40']},
+    {id:'t18',name:'Prof. V. Sundaramurthy',username:'prof_vsundaramurthy',password:'teach123',deptId:'d4',subjectIds:['s41']},
+    {id:'t19',name:'Mr. J. Rao',username:'mr_jrao',password:'teach123',deptId:'d4',subjectIds:['s42']},
+    {id:'t20',name:'Ms. S. Verma',username:'ms_sverma',password:'teach123',deptId:'d4',subjectIds:['s43']},
+    // ECE (4 staff)
+    {id:'t21',name:'Dr. H. Iyer',username:'dr_hiyer',password:'teach123',deptId:'d5',subjectIds:['s50']},
+    {id:'t22',name:'Prof. S. Krishnan',username:'prof_skrishan',password:'teach123',deptId:'d5',subjectIds:['s51']},
+    {id:'t23',name:'Mr. C. Menon',username:'mr_cmenon',password:'teach123',deptId:'d5',subjectIds:['s52']},
+    {id:'t24',name:'Ms. N. Desai',username:'ms_ndesai',password:'teach123',deptId:'d5',subjectIds:['s53']},
+    // IT (4 staff)
+    {id:'t25',name:'Mr. Q. Sharma',username:'mr_qsharma',password:'teach123',deptId:'d6',subjectIds:['s60']},
+    {id:'t26',name:'Ms. U. Singh',username:'ms_usingh',password:'teach123',deptId:'d6',subjectIds:['s61']},
+    {id:'t27',name:'Dr. S. Chandra',username:'dr_schandra',password:'teach123',deptId:'d6',subjectIds:['s62']},
+    {id:'t28',name:'Mr. T. Negi',username:'mr_tnegi',password:'teach123',deptId:'d6',subjectIds:['s63']},
+    // MECH (4 staff)
+    {id:'t29',name:'Prof. R. Gupta',username:'prof_rgupta',password:'teach123',deptId:'d7',subjectIds:['s70']},
+    {id:'t30',name:'Dr. O. Verma',username:'dr_overma',password:'teach123',deptId:'d7',subjectIds:['s71']},
+    {id:'t31',name:'Ms. X. Kumar',username:'ms_xkumar',password:'teach123',deptId:'d7',subjectIds:['s72']},
+    {id:'t32',name:'Mr. Y. Singh',username:'mr_ysingh',password:'teach123',deptId:'d7',subjectIds:['s73']}
+  ]);
+  sSet('ep_students',[
+    // AIDS (5 students - 2nd Year)
+    {id:'u1',name:'Akshay Sharma',username:'21AIDS001',password:'pass123',rollNo:'21AIDS001',deptId:'d1',classId:'c2',yearId:'y2'},
+    {id:'u2',name:'Anaya Iyer',username:'21AIDS002',password:'pass123',rollNo:'21AIDS002',deptId:'d1',classId:'c2',yearId:'y2'},
+    {id:'u3',name:'Arjun Verma',username:'21AIDS003',password:'pass123',rollNo:'21AIDS003',deptId:'d1',classId:'c2',yearId:'y2'},
+    {id:'u4',name:'Bhavna Desai',username:'21AIDS004',password:'pass123',rollNo:'21AIDS004',deptId:'d1',classId:'c2',yearId:'y2'},
+    {id:'u5',name:'Chirag Nair',username:'21AIDS005',password:'pass123',rollNo:'21AIDS005',deptId:'d1',classId:'c2',yearId:'y2'},
+    // CIVIL (5 students - 1st Year)
+    {id:'u6',name:'Akshara Raman',username:'21CIVIL001',password:'pass123',rollNo:'21CIVIL001',deptId:'d2',classId:'c1',yearId:'y1'},
+    {id:'u7',name:'Bhaskar Singh',username:'21CIVIL002',password:'pass123',rollNo:'21CIVIL002',deptId:'d2',classId:'c1',yearId:'y1'},
+    {id:'u8',name:'Chaitra Kumar',username:'21CIVIL003',password:'pass123',rollNo:'21CIVIL003',deptId:'d2',classId:'c1',yearId:'y1'},
+    {id:'u9',name:'Deepak Joshi',username:'21CIVIL004',password:'pass123',rollNo:'21CIVIL004',deptId:'d2',classId:'c1',yearId:'y1'},
+    {id:'u10',name:'Esha Patel',username:'21CIVIL005',password:'pass123',rollNo:'21CIVIL005',deptId:'d2',classId:'c1',yearId:'y1'},
+    // CSE (5 students - 1st Year + 2nd Year)
+    {id:'u11',name:'Aditya Khan',username:'21CSE001',password:'pass123',rollNo:'21CSE001',deptId:'d3',classId:'c1',yearId:'y1'},
+    {id:'u12',name:'Anjali Menon',username:'21CSE002',password:'pass123',rollNo:'21CSE002',deptId:'d3',classId:'c1',yearId:'y1'},
+    {id:'u13',name:'Arjun Mohan',username:'21CSE003',password:'pass123',rollNo:'21CSE003',deptId:'d3',classId:'c2',yearId:'y2'},
+    {id:'u14',name:'Avantika Rao',username:'21CSE004',password:'pass123',rollNo:'21CSE004',deptId:'d3',classId:'c2',yearId:'y2'},
+    {id:'u15',name:'Bhavesh Kumar',username:'21CSE005',password:'pass123',rollNo:'21CSE005',deptId:'d3',classId:'c2',yearId:'y2'},
+    // EEE (5 students - 1st Year)
+    {id:'u16',name:'Aarav Gupta',username:'21EEE001',password:'pass123',rollNo:'21EEE001',deptId:'d4',classId:'c1',yearId:'y1'},
+    {id:'u17',name:'Priya Nair',username:'21EEE002',password:'pass123',rollNo:'21EEE002',deptId:'d4',classId:'c1',yearId:'y1'},
+    {id:'u18',name:'Karthik Sinha',username:'21EEE003',password:'pass123',rollNo:'21EEE003',deptId:'d4',classId:'c1',yearId:'y1'},
+    {id:'u19',name:'Divya Pandey',username:'21EEE004',password:'pass123',rollNo:'21EEE004',deptId:'d4',classId:'c1',yearId:'y1'},
+    {id:'u20',name:'Rohan Malhotra',username:'21EEE005',password:'pass123',rollNo:'21EEE005',deptId:'d4',classId:'c1',yearId:'y1'},
+    // ECE (5 students - 1st Year)
+    {id:'u21',name:'Aditi Sharma',username:'21ECE001',password:'pass123',rollNo:'21ECE001',deptId:'d5',classId:'c1',yearId:'y1'},
+    {id:'u22',name:'Bhargav Reddy',username:'21ECE002',password:'pass123',rollNo:'21ECE002',deptId:'d5',classId:'c1',yearId:'y1'},
+    {id:'u23',name:'Chetana Bhat',username:'21ECE003',password:'pass123',rollNo:'21ECE003',deptId:'d5',classId:'c1',yearId:'y1'},
+    {id:'u24',name:'Darshan Kadam',username:'21ECE004',password:'pass123',rollNo:'21ECE004',deptId:'d5',classId:'c1',yearId:'y1'},
+    {id:'u25',name:'Eesha Saxena',username:'21ECE005',password:'pass123',rollNo:'21ECE005',deptId:'d5',classId:'c1',yearId:'y1'},
+    // IT (5 students - 1st Year)
+    {id:'u26',name:'Arun Kumar',username:'21IT001',password:'pass123',rollNo:'21IT001',deptId:'d6',classId:'c1',yearId:'y1'},
+    {id:'u27',name:'Anjali Chopra',username:'21IT002',password:'pass123',rollNo:'21IT002',deptId:'d6',classId:'c1',yearId:'y1'},
+    {id:'u28',name:'Arjun Reddy',username:'21IT003',password:'pass123',rollNo:'21IT003',deptId:'d6',classId:'c1',yearId:'y1'},
+    {id:'u29',name:'Avni Joshi',username:'21IT004',password:'pass123',rollNo:'21IT004',deptId:'d6',classId:'c1',yearId:'y1'},
+    {id:'u30',name:'Akshit Singh',username:'21IT005',password:'pass123',rollNo:'21IT005',deptId:'d6',classId:'c1',yearId:'y1'},
+    // MECH (5 students - 1st Year)
+    {id:'u31',name:'Ashish Verma',username:'21MECH001',password:'pass123',rollNo:'21MECH001',deptId:'d7',classId:'c1',yearId:'y1'},
+    {id:'u32',name:'Aparna Iyer',username:'21MECH002',password:'pass123',rollNo:'21MECH002',deptId:'d7',classId:'c1',yearId:'y1'},
+    {id:'u33',name:'Anurag Trivedi',username:'21MECH003',password:'pass123',rollNo:'21MECH003',deptId:'d7',classId:'c1',yearId:'y1'},
+    {id:'u34',name:'Archana Nair',username:'21MECH004',password:'pass123',rollNo:'21MECH004',deptId:'d7',classId:'c1',yearId:'y1'},
+    {id:'u35',name:'Ayush Mishra',username:'21MECH005',password:'pass123',rollNo:'21MECH005',deptId:'d7',classId:'c1',yearId:'y1'}
+  ]);
+  sSet('ep_admins',[{id:'a1',username:'admin',password:'admin123',name:'System Administrator'}]);
+  sSet('ep_feedback',[
+    // AIDS 2nd Year (classId='c2', yearId='y2') - POSITIVE/NEUTRAL ONLY - Safe for faculty demo
+    {id:'f1',studentId:'u1',studentName:'Akshay Sharma',rollNo:'21AIDS001',deptId:'d1',classId:'c2',yearId:'y2',subjectId:'s1',staffId:'t1',ratings:{0:4,1:4,2:4,3:5,4:4},comment:'Concepts are explained clearly with good problem-solving examples. Teaching pace is generally appropriate, though some advanced topics could benefit from additional visual demonstrations.',time:new Date(Date.now()-2*86400000).toISOString(),avgRating:4.2},
+    {id:'f2',studentId:'u2',studentName:'Anaya Iyer',rollNo:'21AIDS002',deptId:'d1',classId:'c2',yearId:'y2',subjectId:'s1',staffId:'t1',ratings:{0:5,1:4,2:5,3:4,4:5},comment:'Excellent teaching methodology. Algorithms are explained with real-world applications. Very supportive and accessible during office hours.',time:new Date(Date.now()-86400000).toISOString(),avgRating:4.6},
+    {id:'f3',studentId:'u3',studentName:'Arjun Verma',rollNo:'21AIDS003',deptId:'d1',classId:'c2',yearId:'y2',subjectId:'s2',staffId:'t2',ratings:{0:4,1:5,2:4,3:5,4:4},comment:'Operating Systems module is well-structured. Lab sessions are practical and informative. Could benefit from more hands-on testing exercises to consolidate learning.',time:new Date(Date.now()-5*86400000).toISOString(),avgRating:4.4},
+    {id:'f4',studentId:'u4',studentName:'Bhavna Desai',rollNo:'21AIDS004',deptId:'d1',classId:'c2',yearId:'y2',subjectId:'s3',staffId:'t3',ratings:{0:4,1:4,2:3,3:4,4:4},comment:'Machine Learning fundamentals taught well. Practical projects help solidify concepts. Some mathematical foundations could be explained in more detail for complete understanding.',time:new Date(Date.now()-6*86400000).toISOString(),avgRating:3.8},
+    {id:'f5',studentId:'u5',studentName:'Chirag Nair',rollNo:'21AIDS005',deptId:'d1',classId:'c2',yearId:'y2',subjectId:'s4',staffId:'t4',ratings:{0:5,1:5,2:5,3:4,4:5},comment:'Data security and privacy concepts well presented with industry relevance. Instructor demonstrates practical security implementation approaches effectively.',time:new Date(Date.now()-7*86400000).toISOString(),avgRating:4.8},
+    {id:'f6',studentId:'u1',studentName:'Akshay Sharma',rollNo:'21AIDS001',deptId:'d1',classId:'c2',yearId:'y2',subjectId:'s5',staffId:'t5',ratings:{0:4,1:4,2:4,3:4,4:4},comment:'Software engineering practices course is comprehensive and practical. Real-world development methodologies clearly explained. Well-organized course structure.',time:new Date(Date.now()-8*86400000).toISOString(),avgRating:4.0},
+    {id:'f7',studentId:'u2',studentName:'Anaya Iyer',rollNo:'21AIDS002',deptId:'d1',classId:'c2',yearId:'y2',subjectId:'s6',staffId:'t6',ratings:{0:5,1:5,2:5,3:5,4:4},comment:'Universal Human Values course thoughtfully structured. Instructor brings meaningful perspective to ethics in technology. Engaging and reflective discussions.',time:new Date(Date.now()-9*86400000).toISOString(),avgRating:4.8},
+    {id:'f8',studentId:'u3',studentName:'Arjun Verma',rollNo:'21AIDS003',deptId:'d1',classId:'c2',yearId:'y2',subjectId:'s7',staffId:'t2',ratings:{0:4,1:4,2:4,3:4,4:4},comment:'OS Lab provides excellent hands-on experience with kernel concepts. Lab exercises progressively build practical skills. Instructions and documentation are clear.',time:new Date(Date.now()-10*86400000).toISOString(),avgRating:4.0},
+    {id:'f9',studentId:'u4',studentName:'Bhavna Desai',rollNo:'21AIDS004',deptId:'d1',classId:'c2',yearId:'y2',subjectId:'s8',staffId:'t4',ratings:{0:5,1:4,2:5,3:5,4:5},comment:'AWS ML foundation course well-executed with practical cloud platform experience. Modern DevOps practices integrated throughout. Industry-ready skills developed.',time:new Date(Date.now()-11*86400000).toISOString(),avgRating:4.8},
+    {id:'f10',studentId:'u5',studentName:'Chirag Nair',rollNo:'21AIDS005',deptId:'d1',classId:'c2',yearId:'y2',subjectId:'s9',staffId:'t3',ratings:{0:4,1:4,2:4,3:4,4:4},comment:'NPTEL Data Science courses well-integrated into curriculum. Structured learning path from basics to advanced concepts. Good alignment with current data science practices.',time:new Date(Date.now()-12*86400000).toISOString(),avgRating:4.0},
+    // CSE (Multiple Years) - FULL RANGE feedback for demonstration
+    {id:'f11',studentId:'u11',studentName:'Aditya Khan',rollNo:'21CSE001',deptId:'d3',classId:'c1',yearId:'y1',subjectId:'s20',staffId:'t11',ratings:{0:3,1:3,2:2,3:3,4:2},comment:'Web development course feels disorganized. Pace is inconsistent and some concepts lack clear explanation. Framework switching between topics confuses students.',time:new Date(Date.now()-13*86400000).toISOString(),avgRating:2.6},
+    {id:'f12',studentId:'u12',studentName:'Anjali Menon',rollNo:'21CSE002',deptId:'d3',classId:'c1',yearId:'y1',subjectId:'s20',staffId:'t11',ratings:{0:5,1:5,2:4,3:5,4:5},comment:'Outstanding instructor. Web development fundamentals taught comprehensively. Industry connections and guest lectures add great value. Excellent practical projects.',time:new Date(Date.now()-14*86400000).toISOString(),avgRating:4.8},
+    {id:'f13',studentId:'u11',studentName:'Aditya Khan',rollNo:'21CSE001',deptId:'d3',classId:'c1',yearId:'y1',subjectId:'s21',staffId:'t12',ratings:{0:4,1:3,2:3,3:3,4:3},comment:'Python basics course lacks depth in advanced concepts. Code examples sometimes contain errors that need fixing. Debugging practice sessions would help.',time:new Date(Date.now()-15*86400000).toISOString(),avgRating:3.2},
+    {id:'f14',studentId:'u12',studentName:'Anjali Menon',rollNo:'21CSE002',deptId:'d3',classId:'c1',yearId:'y1',subjectId:'s21',staffId:'t12',ratings:{0:5,1:5,2:5,3:5,4:4},comment:'Excellent Python instruction with clear examples and comprehensive coverage. Practical assignments help develop strong coding practices. Very inspiring teaching.',time:new Date(Date.now()-16*86400000).toISOString(),avgRating:4.8},
+    {id:'f15',studentId:'u11',studentName:'Aditya Khan',rollNo:'21CSE001',deptId:'d3',classId:'c1',yearId:'y1',subjectId:'s22',staffId:'t13',ratings:{0:3,1:4,2:3,3:3,4:3},comment:'Database fundamentals important topic but teaching approach sometimes unclear. More visual ER diagrams and examples would help conceptual understanding.',time:new Date(Date.now()-17*86400000).toISOString(),avgRating:3.2},
+    {id:'f16',studentId:'u13',studentName:'Arjun Mohan',rollNo:'21CSE003',deptId:'d3',classId:'c2',yearId:'y2',subjectId:'s23',staffId:'t14',ratings:{0:4,1:4,2:3,3:4,4:4},comment:'Advanced algorithms course well-structured. Some proofs could use more intuitive explanation. Problem-solving practice sessions very helpful.',time:new Date(Date.now()-18*86400000).toISOString(),avgRating:3.8},
+    {id:'f17',studentId:'u14',studentName:'Avantika Rao',rollNo:'21CSE004',deptId:'d3',classId:'c2',yearId:'y2',subjectId:'s23',staffId:'t14',ratings:{0:5,1:5,2:5,3:5,4:5},comment:'Excellent algorithms instruction. Complex topics explained with appropriate depth and clarity. Competitive programming insights valuable. Outstanding course.',time:new Date(Date.now()-19*86400000).toISOString(),avgRating:5.0},
+    {id:'f18',studentId:'u13',studentName:'Arjun Mohan',rollNo:'21CSE003',deptId:'d3',classId:'c2',yearId:'y2',subjectId:'s24',staffId:'t15',ratings:{0:3,1:3,2:3,3:3,4:3},comment:'Cloud computing course needs better structure. Recent technologies mentioned but not all explained thoroughly. Hands-on deployment exercises lacking.',time:new Date(Date.now()-20*86400000).toISOString(),avgRating:3.0},
+    {id:'f19',studentId:'u14',studentName:'Avantika Rao',rollNo:'21CSE004',deptId:'d3',classId:'c2',yearId:'y2',subjectId:'s24',staffId:'t15',ratings:{0:5,1:5,2:5,3:5,4:5},comment:'Cloud computing taught with excellent AWS and Azure demonstrations. Scalability and deployment patterns well explained. Hands-on labs are comprehensive.',time:new Date(Date.now()-21*86400000).toISOString(),avgRating:5.0},
+    {id:'f20',studentId:'u15',studentName:'Bhavesh Kumar',rollNo:'21CSE005',deptId:'d3',classId:'c2',yearId:'y2',subjectId:'s25',staffId:'t16',ratings:{0:4,1:4,2:3,3:4,4:4},comment:'Software testing course covers practical methodologies. More case studies of real bug scenarios would enhance understanding. Test automation tools well-introduced.',time:new Date(Date.now()-22*86400000).toISOString(),avgRating:3.8},
+    // CIVIL 1st Year
+    {id:'f21',studentId:'u6',studentName:'Akshara Raman',rollNo:'21CIVIL001',deptId:'d2',classId:'c1',yearId:'y1',subjectId:'s30',staffId:'t7',ratings:{0:4,1:4,2:4,3:4,4:4},comment:'Structural design principles are clearly explained with real building examples. Would appreciate more case studies of innovative structures.',time:new Date(Date.now()-23*86400000).toISOString(),avgRating:4.0},
+    {id:'f22',studentId:'u7',studentName:'Bhaskar Singh',rollNo:'21CIVIL002',deptId:'d2',classId:'c1',yearId:'y1',subjectId:'s30',staffId:'t7',ratings:{0:5,1:4,2:5,3:5,4:4},comment:'Excellent pedagogy with good balance of theory and practical application. Design software demonstrations are very helpful. Well-taught course.',time:new Date(Date.now()-24*86400000).toISOString(),avgRating:4.6},
+    {id:'f23',studentId:'u8',studentName:'Chaitra Kumar',rollNo:'21CIVIL003',deptId:'d2',classId:'c1',yearId:'y1',subjectId:'s31',staffId:'t8',ratings:{0:4,1:4,2:3,3:4,4:4},comment:'Material science fundamentals covered well. More material property testing demonstrations would enhance practical understanding. Course content well-organized.',time:new Date(Date.now()-25*86400000).toISOString(),avgRating:3.8},
+    {id:'f24',studentId:'u9',studentName:'Deepak Joshi',rollNo:'21CIVIL004',deptId:'d2',classId:'c1',yearId:'y1',subjectId:'s32',staffId:'t9',ratings:{0:4,1:4,2:4,3:4,4:4},comment:'Geotechnical engineering topic challenging but well-explained. Soil mechanics concepts progressively built. Lab work reinforces theoretical concepts.',time:new Date(Date.now()-26*86400000).toISOString(),avgRating:4.0},
+    {id:'f25',studentId:'u10',studentName:'Esha Patel',rollNo:'21CIVIL005',deptId:'d2',classId:'c1',yearId:'y1',subjectId:'s33',staffId:'t10',ratings:{0:5,1:5,2:4,3:5,4:5},comment:'Water resources engineering comprehensively taught. Hydrological software tools effectively integrated. Real-world watershed management cases discussed.',time:new Date(Date.now()-27*86400000).toISOString(),avgRating:4.8},
+    // EEE 1st Year
+    {id:'f26',studentId:'u16',studentName:'Aarav Gupta',rollNo:'21EEE001',deptId:'d4',classId:'c1',yearId:'y1',subjectId:'s40',staffId:'t17',ratings:{0:4,1:4,2:3,3:4,4:4},comment:'Power systems basics course well-structured with good theoretical foundation. More practical simulations of real power grid scenarios beneficial.',time:new Date(Date.now()-28*86400000).toISOString(),avgRating:3.8},
+    {id:'f27',studentId:'u17',studentName:'Priya Nair',rollNo:'21EEE002',deptId:'d4',classId:'c1',yearId:'y1',subjectId:'s40',staffId:'t17',ratings:{0:5,1:4,2:4,3:5,4:5},comment:'Very knowledgeable instructor with extensive industry experience in power systems. Concepts connected well to practical applications. Excellent course delivery.',time:new Date(Date.now()-29*86400000).toISOString(),avgRating:4.6},
+    {id:'f28',studentId:'u18',studentName:'Karthik Sinha',rollNo:'21EEE003',deptId:'d4',classId:'c1',yearId:'y1',subjectId:'s41',staffId:'t18',ratings:{0:4,1:4,2:4,3:4,4:4},comment:'Circuit fundamentals clearly explained with good use of circuit analysis tools. Practical breadboarding experiments very valuable for understanding.',time:new Date(Date.now()-30*86400000).toISOString(),avgRating:4.0},
+    {id:'f29',studentId:'u19',studentName:'Divya Pandey',rollNo:'21EEE004',deptId:'d4',classId:'c1',yearId:'y1',subjectId:'s42',staffId:'t19',ratings:{0:5,1:4,2:5,3:5,4:5},comment:'Electric machines taught with comprehensive practical demonstrations. Machine performance calculations clearly explained. Excellent laboratory sessions.',time:new Date(Date.now()-31*86400000).toISOString(),avgRating:4.8},
+    {id:'f30',studentId:'u20',studentName:'Rohan Malhotra',rollNo:'21EEE005',deptId:'d4',classId:'c1',yearId:'y1',subjectId:'s43',staffId:'t20',ratings:{0:4,1:4,2:4,3:4,4:4},comment:'Power electronics fundamentals well-presented. Converter circuits explained with good simulations. More advanced power supply design examples helpful.',time:new Date(Date.now()-32*86400000).toISOString(),avgRating:4.0},
+    // ECE 1st Year
+    {id:'f31',studentId:'u21',studentName:'Aditi Sharma',rollNo:'21ECE001',deptId:'d5',classId:'c1',yearId:'y1',subjectId:'s50',staffId:'t21',ratings:{0:4,1:4,2:4,3:4,4:4},comment:'DSP fundamentals well explained. Use of MATLAB simulations helps visualization. Mathematical concepts could require more foundational review.',time:new Date(Date.now()-33*86400000).toISOString(),avgRating:4.0},
+    {id:'f32',studentId:'u22',studentName:'Bhargav Reddy',rollNo:'21ECE002',deptId:'d5',classId:'c1',yearId:'y1',subjectId:'s50',staffId:'t21',ratings:{0:5,1:5,2:5,3:5,4:4},comment:'Excellent DSP instruction with practical applications in signal processing. Lab assignments comprehensive and well-documented. Industry-relevant content.',time:new Date(Date.now()-34*86400000).toISOString(),avgRating:4.8},
+    {id:'f33',studentId:'u23',studentName:'Chetana Bhat',rollNo:'21ECE003',deptId:'d5',classId:'c1',yearId:'y1',subjectId:'s51',staffId:'t22',ratings:{0:4,1:4,2:4,3:4,4:4},comment:'VLSI design fundamentals taught well. Simulation tools used effectively. More advanced layout design exercises would enhance practical understanding.',time:new Date(Date.now()-35*86400000).toISOString(),avgRating:4.0},
+    {id:'f34',studentId:'u24',studentName:'Darshan Kadam',rollNo:'21ECE004',deptId:'d5',classId:'c1',yearId:'y1',subjectId:'s52',staffId:'t23',ratings:{0:5,1:5,2:5,3:5,4:5},comment:'Microprocessors course excellent with real hands-on development board work. Architecture understanding solidified through practical projects. Outstanding instruction.',time:new Date(Date.now()-36*86400000).toISOString(),avgRating:5.0},
+    {id:'f35',studentId:'u25',studentName:'Eesha Saxena',rollNo:'21ECE005',deptId:'d5',classId:'c1',yearId:'y1',subjectId:'s53',staffId:'t24',ratings:{0:4,1:4,2:3,3:4,4:4},comment:'Communication systems course covers modulation and demodulation well. More practical RF circuit examples would strengthen understanding.',time:new Date(Date.now()-37*86400000).toISOString(),avgRating:3.8},
+    // IT 1st Year  
+    {id:'f36',studentId:'u26',studentName:'Arun Kumar',rollNo:'21IT001',deptId:'d6',classId:'c1',yearId:'y1',subjectId:'s60',staffId:'t25',ratings:{0:4,1:4,2:3,3:4,4:4},comment:'Enterprise Java course comprehensive and practical. Building real-world applications strengthens understanding. Pace occasionally feels brisk for complex topics.',time:new Date(Date.now()-38*86400000).toISOString(),avgRating:3.8},
+    {id:'f37',studentId:'u27',studentName:'Anjali Chopra',rollNo:'21IT002',deptId:'d6',classId:'c1',yearId:'y1',subjectId:'s60',staffId:'t25',ratings:{0:5,1:5,2:4,3:5,4:5},comment:'Outstanding Java instruction. Project-based learning approach very effective. Industry certifications mentioned add career value. Excellent course.',time:new Date(Date.now()-39*86400000).toISOString(),avgRating:4.8},
+    {id:'f38',studentId:'u28',studentName:'Arjun Reddy',rollNo:'21IT003',deptId:'d6',classId:'c1',yearId:'y1',subjectId:'s61',staffId:'t26',ratings:{0:5,1:5,2:5,3:5,4:5},comment:'Excellent mobile app development course. Current platforms and frameworks covered comprehensively. Hands-on projects very engaging and practical.',time:new Date(Date.now()-40*86400000).toISOString(),avgRating:5.0},
+    {id:'f39',studentId:'u29',studentName:'Avni Joshi',rollNo:'21IT004',deptId:'d6',classId:'c1',yearId:'y1',subjectId:'s62',staffId:'t27',ratings:{0:4,1:4,2:3,3:4,4:4},comment:'Big data analytics course covers relevant tools and techniques. More real-world dataset analysis would strengthen practical skills.',time:new Date(Date.now()-41*86400000).toISOString(),avgRating:3.8},
+    {id:'f40',studentId:'u30',studentName:'Akshit Singh',rollNo:'21IT005',deptId:'d6',classId:'c1',yearId:'y1',subjectId:'s63',staffId:'t28',ratings:{0:5,1:5,2:4,3:5,4:5},comment:'Network security course comprehensive covering cryptography and protocols. Hands-on penetration testing exercises very valuable. Industry-standard practices taught well.',time:new Date(Date.now()-42*86400000).toISOString(),avgRating:4.8},
+    // MECH 1st Year
+    {id:'f41',studentId:'u31',studentName:'Ashish Verma',rollNo:'21MECH001',deptId:'d7',classId:'c1',yearId:'y1',subjectId:'s70',staffId:'t29',ratings:{0:4,1:4,2:4,3:4,4:4},comment:'Mechanical design fundamentals covered well with good use of CAD software. Some advanced manufacturing techniques could be included.',time:new Date(Date.now()-43*86400000).toISOString(),avgRating:4.0},
+    {id:'f42',studentId:'u32',studentName:'Aparna Iyer',rollNo:'21MECH002',deptId:'d7',classId:'c1',yearId:'y1',subjectId:'s70',staffId:'t29',ratings:{0:5,1:5,2:4,3:5,4:5},comment:'Excellent mechanical design instruction with practical problem-solving approach. Design optimization discussions very insightful. Outstanding course.',time:new Date(Date.now()-44*86400000).toISOString(),avgRating:4.8},
+    {id:'f43',studentId:'u33',studentName:'Anurag Trivedi',rollNo:'21MECH003',deptId:'d7',classId:'c1',yearId:'y1',subjectId:'s71',staffId:'t30',ratings:{0:4,1:4,2:4,3:4,4:4},comment:'Thermodynamics fundamentals covered comprehensively. First and second law applications well-explained. More real-world cycle applications would help.',time:new Date(Date.now()-45*86400000).toISOString(),avgRating:4.0},
+    {id:'f44',studentId:'u34',studentName:'Archana Nair',rollNo:'21MECH004',deptId:'d7',classId:'c1',yearId:'y1',subjectId:'s72',staffId:'t31',ratings:{0:5,1:5,2:5,3:5,4:5},comment:'Comprehensive fluid mechanics instruction. Real-world applications well-illustrated. Excellent use of experimental demonstrations and simulations.',time:new Date(Date.now()-46*86400000).toISOString(),avgRating:5.0},
+    {id:'f45',studentId:'u35',studentName:'Ayush Mishra',rollNo:'21MECH005',deptId:'d7',classId:'c1',yearId:'y1',subjectId:'s73',staffId:'t32',ratings:{0:4,1:4,2:4,3:4,4:4},comment:'Heat transfer concepts taught comprehensively. Conduction, convection, and radiation well-explained. More industrial applications could be included.',time:new Date(Date.now()-47*86400000).toISOString(),avgRating:4.0}
+  ]);
+  sSet('ep_v6',true);
+}
+
+const getDepts=()=>sGet('ep_depts')||[];
+const getYears=()=>sGet('ep_years')||[];
+const getClasses=()=>sGet('ep_classes')||[];
+const getSubjects=()=>sGet('ep_subjects')||[];
+const getStaff=()=>sGet('ep_staff')||[];
+const getStudents=()=>sGet('ep_students')||[];
+const getFeedback=()=>sGet('ep_feedback')||[];
+const getAdmins=()=>sGet('ep_admins')||[];
+const deptById=id=>getDepts().find(d=>d.id===id)||{};
+const yearById=id=>getYears().find(y=>y.id===id)||{};
+const classById=id=>getClasses().find(c=>c.id===id)||{};
+const subjById=id=>getSubjects().find(s=>s.id===id)||{};
+const staffById=id=>getStaff().find(t=>t.id===id)||{};
+const getSubjectsForDeptYear=(deptId,yearId)=>getSubjects().filter(s=>s.deptId===deptId&&s.yearId===yearId);
+
+const QUESTIONS=[
+  'How clearly did the teacher explain the concepts?',
+  'How interactive and engaging were the classes?',
+  'How accessible was the teacher for doubts and queries?',
+  'How effectively was the syllabus covered on time?',
+  'Overall, how satisfied are you with this teacher?'
+];
+
+// ════════════════════════════
+// AUTH
+// ════════════════════════════
+let currentRole='student',currentUser=null,ratings={};
+
+function switchRole(r){
+  currentRole=r;
+  document.querySelectorAll('.role-tab').forEach((t,i)=>t.classList.toggle('active',['student','teacher','admin'][i]===r));
+  const m={student:['Student Login','Submit feedback for your subjects'],teacher:['Teacher Login','View & analyse your feedback'],admin:['Admin Login','Manage all system data']};
+  document.getElementById('lTitle').textContent=m[r][0];
+  document.getElementById('lSub').textContent=m[r][1];
+  document.getElementById('lErr').style.display='none';
+  renderDemoCreds();
+}
+function renderDemoCreds(){
+  const el=document.getElementById('demoCreds');
+  if(currentRole==='student') el.innerHTML=getStudents().slice(0,4).map(s=>`<div class="demo-item" onclick="fillCreds('${s.username}','${s.password}')"><b>${s.username}</b>${s.name} / ${s.password}</div>`).join('');
+  else if(currentRole==='teacher') el.innerHTML=getStaff().slice(0,4).map(t=>`<div class="demo-item" onclick="fillCreds('${t.username}','${t.password}')"><b>${t.username}</b>${t.name} / ${t.password}</div>`).join('');
+  else el.innerHTML=getAdmins().map(a=>`<div class="demo-item" onclick="fillCreds('${a.username}','${a.password}')"><b>${a.username}</b>System Admin / ${a.password}</div>`).join('');
+}
+function fillCreds(u,p){document.getElementById('lUser').value=u;document.getElementById('lPass').value=p;}
+function doLogin(){
+  const user=document.getElementById('lUser').value.trim(),pass=document.getElementById('lPass').value.trim();
+  document.getElementById('lErr').style.display='none';
+  if(currentRole==='student'){const s=getStudents().find(x=>x.username===user&&x.password===pass);if(s){currentUser=s;launchStudent();return;}}
+  else if(currentRole==='teacher'){const t=getStaff().find(x=>x.username===user&&x.password===pass);if(t){currentUser=t;launchTeacher();return;}}
+  else{const a=getAdmins().find(x=>x.username===user&&x.password===pass);if(a){currentUser=a;launchAdmin();return;}}
+  document.getElementById('lErr').style.display='block';
+}
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const sc=document.getElementById(id);sc.classList.add('active');sc.scrollTop=0;
+  const ma=sc.querySelector('.main-area');if(ma)ma.scrollTop=0;
+}
+function logout(){currentUser=null;ratings={};document.getElementById('lUser').value='';document.getElementById('lPass').value='';renderDemoCreds();showScreen('screen-login');}
+
+// ════════════════════════════
+// STUDENT
+// ════════════════════════════
+function launchStudent(){
+  showScreen('screen-student');
+  document.getElementById('stu-nm').textContent=currentUser.name;
+  document.getElementById('stu-av').textContent=currentUser.name[0];
+  document.getElementById('stu-dept').textContent=deptById(currentUser.deptId).code||'—';
+  stuNav('feedback',document.querySelector('#screen-student .nav-item'));
+}
+function stuNav(id,el){
+  document.querySelectorAll('#screen-student .nav-item').forEach(n=>n.classList.remove('active'));
+  if(el)el.classList.add('active');
+  document.querySelectorAll('#screen-student .sub-page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('stu-'+id).classList.add('active');
+  if(id==='feedback')resetFbForm();
+  if(id==='history')renderStudentHistory();
+}
+
+function resetFbForm(){
+  ratings={};
+  if(document.getElementById('fb-comment'))document.getElementById('fb-comment').value='';
+  if(document.getElementById('submit-fb-btn'))document.getElementById('submit-fb-btn').disabled=false;
+  // Reset department dropdown
+  const ds=document.getElementById('sel-dept');
+  ds.innerHTML='<option value="">— Select Department —</option>';
+  getDepts().forEach(d=>{const o=document.createElement('option');o.value=d.id;o.textContent=`${d.code} — ${d.name}`;ds.appendChild(o);});
+  ds.value='';
+  // Reset class year dropdown
+  const cl=document.getElementById('sel-class');
+  cl.innerHTML='<option value="">— Select Class —</option>';
+  cl.disabled=true;
+  cl.value='';
+  // Reset academic year field
+  const ay=document.getElementById('sel-acyear');
+  ay.value='';
+  ay.placeholder='Auto-filled when class is selected';
+  // Reset subject dropdown
+  document.getElementById('sel-subj').innerHTML='<option value="">— Select Subject —</option>';
+  document.getElementById('sel-subj').disabled=true;
+  // Reset staff dropdown
+  document.getElementById('sel-staff').innerHTML='<option value="">— Select Staff —</option>';
+  document.getElementById('sel-staff').disabled=true;
+  setSlide(1);
+}
+
+function onStuDeptChange(){
+  const dId=document.getElementById('sel-dept').value;
+  const cl=document.getElementById('sel-class');
+  cl.innerHTML='<option value="">— Select Class —</option>';cl.disabled=!dId;
+  const ay=document.getElementById('sel-acyear');
+  ay.value='';
+  document.getElementById('sel-subj').innerHTML='<option value="">— Select Subject —</option>';document.getElementById('sel-subj').disabled=true;
+  document.getElementById('sel-staff').innerHTML='<option value="">— Select Staff —</option>';document.getElementById('sel-staff').disabled=true;
+  if(!dId)return;
+  getClasses().forEach(c=>{const o=document.createElement('option');o.value=c.id;o.textContent=c.name;cl.appendChild(o);});
+}
+
+function onStuClassChange(){
+  const cId=document.getElementById('sel-class').value;
+  const dId=document.getElementById('sel-dept').value;
+  const ay=document.getElementById('sel-acyear');
+  ay.value='';
+  document.getElementById('sel-subj').innerHTML='<option value="">— Select Subject —</option>';document.getElementById('sel-subj').disabled=true;
+  document.getElementById('sel-staff').innerHTML='<option value="">— Select Staff —</option>';document.getElementById('sel-staff').disabled=true;
+  if(!cId)return;
+  // auto-select the linked academic year
+  const cl=classById(cId);
+  if(cl.yearId){
+    const year=yearById(cl.yearId);
+    ay.value=year.name;
+    // auto-load subjects by triggering year change with the auto-selected year ID
+    setTimeout(()=>onStuYearChange(cl.yearId),0);
+  }
+}
+
+function onStuYearChange(autoYearId){
+  const dId=document.getElementById('sel-dept').value;
+  const ss=document.getElementById('sel-subj');
+  ss.innerHTML='<option value="">— Select Subject —</option>';ss.disabled=false;
+  document.getElementById('sel-staff').innerHTML='<option value="">— Select Staff —</option>';document.getElementById('sel-staff').disabled=true;
+  getSubjectsForDeptYear(dId,autoYearId).forEach(s=>{const o=document.createElement('option');o.value=s.id;o.textContent=s.name;ss.appendChild(o);});
+}
+
+function onStuSubjChange(){
+  const sId=document.getElementById('sel-subj').value;
+  const sf=document.getElementById('sel-staff');
+  sf.innerHTML='<option value="">— Select Staff —</option>';sf.disabled=!sId;
+  if(!sId)return;
+  getStaff().filter(t=>(t.subjectIds||[]).includes(sId)).forEach(t=>{const o=document.createElement('option');o.value=t.id;o.textContent=t.name;sf.appendChild(o);});
+}
+
+function goToRate(){
+  const dId=document.getElementById('sel-dept').value;
+  const cId=document.getElementById('sel-class').value;
+  const yValue=document.getElementById('sel-acyear').value;
+  const sId=document.getElementById('sel-subj').value;
+  const stId=document.getElementById('sel-staff').value;
+  if(!dId||!cId||!yValue||!sId||!stId){toast('❌ Please complete all selections first','err');return;}
+  // Find the year ID from the year name
+  const yId=getYears().find(y=>y.name===yValue)?.id;
+  if(!yId){toast('❌ Invalid academic year','err');return;}
+  const d=deptById(dId),c=classById(cId),y=yearById(yId),s=subjById(sId),st=staffById(stId);
+  document.getElementById('sel-summary-tags').innerHTML=[
+    `<div class="sel-tag">🏛️ <b>${d.code}</b></div>`,
+    `<div class="sel-tag">🏫 <b>${c.name}</b></div>`,
+    `<div class="sel-tag">📅 <b>${y.name}</b></div>`,
+    `<div class="sel-tag">📚 <b>${s.name}</b></div>`,
+    `<div class="sel-tag">👨‍🏫 <b>${st.name}</b></div>`
+  ].join('');
+  buildQs();setSlide(2);
+}
+function goBackToSelect(){setSlide(1);}
+function setSlide(n){
+  document.querySelectorAll('#stu-feedback .slide').forEach((s,i)=>s.classList.toggle('active',i===n-1));
+  [1,2].forEach(i=>{const el=document.getElementById('stp'+i);if(!el)return;el.classList.toggle('on',i===n);el.classList.toggle('done',i<n);});
+}
+function buildQs(){
+  ratings={};
+  document.getElementById('q-container').innerHTML=QUESTIONS.map((q,i)=>`
+    <div class="q-item">
+      <div class="q-num">Question ${i+1} of ${QUESTIONS.length}</div>
+      <div class="q-text">${q}</div>
+      <div class="stars" id="st-${i}">${[1,2,3,4,5].map(v=>`<button class="star-btn" onclick="setRating(${i},${v})">☆</button>`).join('')}</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:5px">1 = Poor &nbsp;·&nbsp; 3 = Average &nbsp;·&nbsp; 5 = Excellent</div>
+    </div>`).join('');
+}
+function setRating(q,val){ratings[q]=val;document.querySelectorAll(`#st-${q} .star-btn`).forEach((b,i)=>{b.classList.toggle('sel',i<val);b.textContent=i<val?'⭐':'☆';});}
+function submitFeedback(){
+  if(Object.keys(ratings).length<QUESTIONS.length){toast('❌ Please rate all '+QUESTIONS.length+' questions','err');return;}
+  const btn=document.getElementById('submit-fb-btn');btn.disabled=true;
+  const deptId=document.getElementById('sel-dept').value,classId=document.getElementById('sel-class').value;
+  const yValue=document.getElementById('sel-acyear').value;
+  const yearId=getYears().find(y=>y.name===yValue)?.id;
+  const subjId=document.getElementById('sel-subj').value;
+  const staffId=document.getElementById('sel-staff').value,comment=document.getElementById('fb-comment').value.trim();
+  const avg=parseFloat((Object.values(ratings).reduce((a,b)=>a+b,0)/QUESTIONS.length).toFixed(1));
+  const sentiment=analyzeSentiment(comment);
+  const fb={id:'f'+Date.now(),studentId:currentUser.id,studentName:currentUser.name,rollNo:currentUser.rollNo||currentUser.username,deptId,classId,yearId,subjectId:subjId,staffId,ratings:{...ratings},comment,sentiment,time:new Date().toISOString(),avgRating:avg};
+  const list=getFeedback();list.push(fb);sSet('ep_feedback',list);
+  toast('✅ Feedback submitted! Thank you, '+currentUser.name.split(' ')[0]+'!','ok');
+  setTimeout(()=>resetFbForm(),1800);
+}
+function renderStudentHistory(){
+  const list=getFeedback().filter(f=>f.studentId===currentUser.id);
+  const el=document.getElementById('stu-hist-list');
+  if(!list.length){el.innerHTML='<div class="card"><div class="empty-state"><div class="eico">📭</div>No feedback submitted yet.</div></div>';return;}
+  el.innerHTML=[...list].reverse().map(f=>{
+    const subj=subjById(f.subjectId),staff=staffById(f.staffId),year=yearById(f.yearId),cl=classById(f.classId);
+    return `<div class="fb-item"><div class="fb-hdr">
+      <div><div style="font-size:14px;font-weight:600">${subj.name||'—'}</div>
+      <div style="font-size:12px;color:var(--text2)">${staff.name||'—'} &nbsp;·&nbsp; ${cl.name||'—'} &nbsp;·&nbsp; ${year.name||'—'}</div></div>
+      <div style="text-align:right"><div class="badge b-yellow" style="font-size:13px">⭐ ${f.avgRating}/5</div><div class="fb-time" style="margin-top:3px">${fmtTime(f.time)}</div></div>
+    </div>${f.comment?`<div class="fb-comment">"${f.comment}"</div>`:''}</div>`;
+  }).join('');
+}
+
+// ════════════════════════════
+// SENTIMENT ANALYSIS
+// ════════════════════════════
+function analyzeSentiment(text){
+  if(!text)return'neutral';
+  const lowerText=text.toLowerCase();
+  const positiveWords=['good','great','excellent','wonderful','amazing','best','awesome','well','positive','helpful','clear','effective','easy','understand','liked','enjoyed','beneficial','impressive','perfect','outstanding'];
+  const negativeWords=['fast','difficult','confusing','hard','bad','poor','weak','slow','unclear','boring','ineffective','complicated','challenge','struggle','lost','frustrated','disappointed','wrong','terrible','awful'];
+  const posCount=positiveWords.filter(w=>lowerText.includes(w)).length;
+  const negCount=negativeWords.filter(w=>lowerText.includes(w)).length;
+  if(posCount>negCount)return'positive';
+  if(negCount>posCount)return'negative';
+  return'neutral';
+}
+
+// ════════════════════════════
+let currentPerfFilter='all';
+
+function launchTeacher(){
+  showScreen('screen-teacher');
+  document.getElementById('tea-nm').textContent=currentUser.name;
+  document.getElementById('tea-av').textContent=currentUser.name[0];
+  document.getElementById('tea-dept').textContent=deptById(currentUser.deptId).code||'—';
+  document.getElementById('tea-welcome').textContent=`Hello, ${currentUser.name.split(' ').slice(-1)[0]} 👋`;
+  populateTeaFilters();
+  teaNav('overview',document.querySelector('#screen-teacher .nav-item'));
+}
+function getMyFb(){return getFeedback().filter(f=>f.staffId===currentUser.id);}
+function sent(f){
+  // Use explicit sentiment if available, otherwise fallback to rating-based
+  if(f.sentiment)return f.sentiment;
+  return f.avgRating>=4?'pos':f.avgRating>=3?'neu':'neg';
+}
+
+function populateTeaFilters(){
+  // Populate class and subj in all filter bars
+  const classes=getClasses();
+  const myFb=getMyFb();
+  const usedSubjs=[...new Set(myFb.map(f=>f.subjectId))].map(id=>subjById(id)).filter(x=>x.id);
+  ['ov-f-class','fb-f-class','st-f-class','ai-f-class'].forEach(id=>{
+    const el=document.getElementById(id);if(!el)return;
+    el.innerHTML='<option value="">All Classes</option>';
+    classes.forEach(c=>{const o=document.createElement('option');o.value=c.id;o.textContent=c.name;el.appendChild(o);});
+  });
+  ['ov-f-subj','fb-f-subj','st-f-subj','ai-f-subj'].forEach(id=>{
+    const el=document.getElementById(id);if(!el)return;
+    el.innerHTML='<option value="">All Subjects</option>';
+    usedSubjs.forEach(s=>{const o=document.createElement('option');o.value=s.id;o.textContent=s.name;el.appendChild(o);});
+  });
+}
+
+// When class filter changes → auto-set academic year
+function onTeaClassFilterChange(prefix){
+  const classEl=document.getElementById(prefix+'-f-class');
+  const yearEl=document.getElementById(prefix+'-f-year');
+  if(!classEl||!yearEl)return;
+  const cId=classEl.value;
+  if(cId){
+    const cl=classById(cId);
+    if(cl.yearId){
+      yearEl.value=yearById(cl.yearId).name;
+    } else {
+      yearEl.value='';
+    }
+  } else {
+    yearEl.value='';
+  }
+}
+
+function getFilteredFb(prefix){
+  let fb=getMyFb();
+  const cId=document.getElementById(prefix+'-f-class')?.value;
+  const yName=document.getElementById(prefix+'-f-year')?.value;
+  const sId=document.getElementById(prefix+'-f-subj')?.value;
+  const sent_=document.getElementById(prefix+'-f-sent')?.value;
+  if(cId)fb=fb.filter(f=>f.classId===cId);
+  if(yName){
+    const yId=getYears().find(y=>y.name===yName)?.id;
+    if(yId)fb=fb.filter(f=>f.yearId===yId);
+  }
+  if(sId)fb=fb.filter(f=>f.subjectId===sId);
+  if(sent_)fb=fb.filter(f=>sent(f)===sent_);
+  return fb;
+}
+function clearFilter(prefix){
+  ['-f-class','-f-year','-f-subj','-f-sent'].forEach(s=>{
+    const el=document.getElementById(prefix+s);if(el)el.value='';
+  });
+  if(prefix==='ov')renderOverview();
+  if(prefix==='fb')renderFbList();
+  if(prefix==='st')renderPerf(currentPerfFilter);
+}
+function teaNav(id,el){
+  document.querySelectorAll('#screen-teacher .nav-item').forEach(n=>n.classList.remove('active'));
+  if(el)el.classList.add('active');
+  else document.querySelectorAll('#screen-teacher .nav-item').forEach(n=>{if((n.getAttribute('onclick')||'').includes(`'${id}'`))n.classList.add('active');});
+  document.querySelectorAll('#screen-teacher .sub-page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tea-'+id).classList.add('active');
+  if(id==='overview')renderOverview();
+  if(id==='feedbacks')renderFbList();
+  if(id==='students')renderPerf(currentPerfFilter);
+}
+function renderOverview(){
+  const fb=getFilteredFb('ov'),total=fb.length;
+  const avg=total?(fb.reduce((s,f)=>s+f.avgRating,0)/total).toFixed(1):'—';
+  const pos=fb.filter(f=>sent(f)==='pos').length,neu=fb.filter(f=>sent(f)==='neu').length,neg=fb.filter(f=>sent(f)==='neg').length;
+  document.getElementById('t-total').textContent=total;document.getElementById('t-avg').textContent=avg;
+  document.getElementById('t-pos').textContent=total?Math.round(pos/total*100)+'%':'0%';
+  document.getElementById('t-subj').textContent=[...new Set(fb.map(f=>f.subjectId))].length;
+  const lbl=['Clarity','Engage','Access','Syllabus','Overall'];
+  document.getElementById('ov-chart').innerHTML=QUESTIONS.map((_,i)=>{
+    const v=fb.filter(f=>f.ratings[i]!==undefined).map(f=>f.ratings[i]);
+    const a=v.length?(v.reduce((x,y)=>x+y,0)/v.length).toFixed(1):0;
+    return `<div class="bar-col"><div class="bar-val">${a}</div><div class="bar-fill" style="height:${a/5*58}px"></div><div class="bar-lbl">${lbl[i]}</div></div>`;
+  }).join('');
+  const recent=[...fb].slice(-3).reverse();
+  document.getElementById('ov-recent').innerHTML=recent.length?recent.map(f=>{
+    const c=sent(f)==='pos'?'b-green':sent(f)==='neg'?'b-red':'b-blue';
+    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
+      <div><div style="font-size:13px;font-weight:600">${f.studentName}</div>
+      <div style="font-size:11px;color:var(--text2)">${subjById(f.subjectId).name||'—'} · ${classById(f.classId).name||'—'} · ${fmtTime(f.time)}</div></div>
+      <span class="badge ${c}">⭐ ${f.avgRating}</span></div>`;
+  }).join(''):'<div class="empty-state" style="padding:14px"><div class="eico">📭</div>No feedback for this filter</div>';
+  document.getElementById('s-pos').textContent=pos;document.getElementById('s-neu').textContent=neu;document.getElementById('s-neg').textContent=neg;
+  if(total){document.getElementById('sb-pos').style.width=(pos/total*100)+'%';document.getElementById('sb-neu').style.width=(neu/total*100)+'%';document.getElementById('sb-neg').style.width=(neg/total*100)+'%';}
+  else['sb-pos','sb-neu','sb-neg'].forEach(id=>document.getElementById(id).style.width='0%');
+}
+function renderFbList(){
+  const fb=getFilteredFb('fb');
+  const el=document.getElementById('fb-list');
+  if(!fb.length){el.innerHTML='<div class="card"><div class="empty-state"><div class="eico">🔍</div>No feedback matches this filter.</div></div>';return;}
+  const lbl=['Clarity','Engage','Access','Syllabus','Overall'];
+  el.innerHTML=[...fb].reverse().map(f=>{
+    const s=sent(f),c=s==='pos'?'b-green':s==='neg'?'b-red':'b-blue';
+    return `<div class="fb-item"><div class="fb-hdr">
+      <div class="fb-stu"><div class="fb-av">${f.studentName[0]}</div>
+        <div><div class="fb-nm">${f.studentName}</div><div class="fb-rl">${f.rollNo}</div></div></div>
+      <div style="text-align:right"><span class="badge ${c}">${s==='pos'?'✅ Positive':s==='neg'?'❌ Negative':'➖ Neutral'}</span>
+        <div class="fb-time" style="margin-top:3px">${fmtTime(f.time)}</div></div>
+    </div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:6px">📚 ${subjById(f.subjectId).name||'—'} &nbsp;·&nbsp; 🏫 ${classById(f.classId).name||'—'} &nbsp;·&nbsp; 📅 ${yearById(f.yearId).name||'—'}</div>
+    <div class="fb-chips">${lbl.map((l,i)=>`<div class="fb-chip">${l}: <span class="v">${f.ratings[i]??'—'}/5</span></div>`).join('')}
+      <div class="fb-chip" style="background:rgba(245,158,11,.08)">Avg: <span class="v" style="color:var(--yellow)">${f.avgRating}/5</span></div></div>
+    ${f.comment?`<div class="fb-comment">"${f.comment}"</div>`:''}</div>`;
+  }).join('');
+}
+function renderPerf(filter){
+  currentPerfFilter=filter;
+  const fb=getFilteredFb('st'),map={};
+  fb.forEach(f=>{if(!map[f.studentId])map[f.studentId]={name:f.studentName,rollNo:f.rollNo,total:0,count:0};map[f.studentId].total+=f.avgRating;map[f.studentId].count++;});
+  let list=Object.values(map).map(s=>({...s,avg:parseFloat((s.total/s.count).toFixed(1))}));
+  if(filter==='good')list=list.filter(s=>s.avg>=3.5);
+  if(filter==='weak')list=list.filter(s=>s.avg<3.5);
+  const el=document.getElementById('perf-list');
+  if(!list.length){el.innerHTML='<div style="grid-column:1/-1"><div class="empty-state"><div class="eico">👥</div>No students found.</div></div>';return;}
+  el.innerHTML=list.sort((a,b)=>b.avg-a.avg).map(s=>{
+    const g=s.avg>=3.5,pct=Math.round(s.avg/5*100);
+    return `<div class="perf-item"><div class="perf-av ${g?'good':'weak'}">${s.name[0]}</div>
+      <div style="flex:1"><div class="perf-nm">${s.name}</div><div class="perf-sc">${s.rollNo} · ${s.count} feedback</div>
+      <div class="perf-bar" style="margin-top:5px"><div class="perf-fill ${g?(s.avg>=4.2?'good':'avg'):'weak'}" style="width:${pct}%"></div></div></div>
+      <span class="badge ${g?'b-green':'b-red'}">${s.avg}/5</span></div>`;
+  }).join('');
+}
+function perfFilter(f,el){document.querySelectorAll('#tea-students .atab').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderPerf(f);}
+
+// ════════════════════════════
+// AI
+// ════════════════════════════
+function runAI(){
+  onTeaClassFilterChange('ai');
+  let fb=getMyFb();
+  const cId=document.getElementById('ai-f-class')?.value;
+  const yName=document.getElementById('ai-f-year')?.value;
+  const sId=document.getElementById('ai-f-subj')?.value;
+  if(cId)fb=fb.filter(f=>f.classId===cId);
+  if(yName){
+    const yId=getYears().find(y=>y.name===yName)?.id;
+    if(yId)fb=fb.filter(f=>f.yearId===yId);
+  }
+  if(sId)fb=fb.filter(f=>f.subjectId===sId);
+  if(!fb.length){toast('❌ No feedback found for this filter','err');return;}
+  
+  // Show loading animation
+  document.getElementById('ai-btn').disabled=true;
+  document.getElementById('ai-load').style.display='block';
+  document.getElementById('ai-out').style.display='none';
+  
+  // Analyze feedback after 1.2 seconds for better UX
+  setTimeout(()=>{
+    const analysis=analyzeLocalFeedback(fb);
+    renderAIStructured(analysis,fb.length);
+    document.getElementById('ai-load').style.display='none';
+    document.getElementById('ai-out').style.display='block';
+    document.getElementById('ai-btn').disabled=false;
+  },1200);
+}
+
+function analyzeLocalFeedback(feedbackList){
+  const result={
+    overallSummary:'',
+    problems:[],
+    strengths:[],
+    frequentTopics:[],
+    improvements:[],
+    topProblemTopic:''
+  };
+  
+  if(!feedbackList.length)return result;
+  
+  // Create aggregated data
+  const avgRating=feedbackList.reduce((s,f)=>s+f.avgRating,0)/feedbackList.length;
+  const posCount=feedbackList.filter(f=>sent(f)==='pos').length;
+  const negCount=feedbackList.filter(f=>sent(f)==='neg').length;
+  const neutCount=feedbackList.filter(f=>sent(f)==='neu').length;
+  const allComments=feedbackList.filter(f=>f.comment&&f.comment.trim()).map(f=>f.comment.toLowerCase());
+  const allRatings=feedbackList.map(f=>f.ratings);
+  
+  // Extract keywords and patterns
+  const keywordFreq=extractKeywordFrequency(allComments);
+  const problemKeywords=keywordFreq.problems;
+  const strengthKeywords=keywordFreq.strengths;
+  const topicKeywords=keywordFreq.topics;
+  
+  // Detect top problem topic
+  if(problemKeywords.length>0){
+    result.topProblemTopic=problemKeywords[0].word;
+  }
+  
+  // Generate summary
+  result.overallSummary=generateSummary(feedbackList.length,avgRating,posCount,negCount,neutCount);
+  
+  // Identify key problems
+  result.problems=generateProblems(feedbackList,problemKeywords);
+  
+  // Identify strengths
+  result.strengths=generateStrengths(feedbackList,strengthKeywords);
+  
+  // Identify frequently mentioned topics
+  result.frequentTopics=topicKeywords.slice(0,5).map(t=>({name:t.word,frequency:t.count}));
+  
+  // Generate improvements
+  result.improvements=generateImprovements(feedbackList,result.problems,allRatings);
+  
+  return result;
+}
+
+function extractKeywordFrequency(comments){
+  const result={problems:[],strengths:[],topics:[]};
+  if(!comments.length)return result;
+  
+  // Problem keywords
+  const problemWords={
+    'pace/speed':['fast','quickly','quick','rush','hurry','squeezed'],
+    'difficulty':['difficult','hard','challenging','tough','complex','complicated'],
+    'clarity':['confusing','confused','unclear','unclear','not understandable','hard to understand'],
+    'engagement':['boring','dull','monotonous','slow','tedious'],
+    'accessibility':['skipped','too much','too many topics','incomplete','missing'],
+    'explanation':['not explained','no explanation','unclear explanation','bad explanation']
+  };
+  
+  // Strength keywords
+  const strengthWords={
+    'clarity':['clear','clear explanation','easy to understand','well explained','simple'],
+    'engagement':['interesting','engaging','interactive','good','fun','enjoyed'],
+    'quality':['excellent','excellent','great','amazing','wonderful','best'],
+    'examples':['examples','diagrams','visual','visualization','real-world'],
+    'pace':['adequate pace','good pace','right speed','manageable','reasonable']
+  };
+  
+  // Topic keywords to extract
+  const topicKeywords=['recursion','dynamic programming','graph','linked list','tree','array','sorting','algorithm','hash','stack','queue','pointer','complexity','optimization','debugging','testing'];
+  
+  // Count problem keywords
+  const problemCounts={};
+  Object.entries(problemWords).forEach(([category,words])=>{
+    const count=comments.filter(com=>words.some(w=>com.includes(w))).length;
+    if(count>0)problemCounts[category]=count;
+  });
+  result.problems=Object.entries(problemCounts).map(([word,count])=>({word,count})).sort((a,b)=>b.count-a.count);
+  
+  // Count strength keywords
+  const strengthCounts={};
+  Object.entries(strengthWords).forEach(([category,words])=>{
+    const count=comments.filter(com=>words.some(w=>com.includes(w))).length;
+    if(count>0)strengthCounts[category]=count;
+  });
+  result.strengths=Object.entries(strengthCounts).map(([word,count])=>({word,count})).sort((a,b)=>b.count-a.count);
+  
+  // Extract mentioned topics
+  const topicCounts={};
+  topicKeywords.forEach(topic=>{
+    const count=comments.filter(com=>com.includes(topic)).length;
+    if(count>0)topicCounts[topic]=count;
+  });
+  result.topics=Object.entries(topicCounts).map(([word,count])=>({word,count})).sort((a,b)=>b.count-a.count);
+  
+  return result;
+}
+
+function generateSummary(total,avgRating,posCount,negCount,neutCount){
+  const overallSentiment=posCount>negCount?'predominantly positive':negCount>posCount?'reveals actionable improvement opportunities':'balanced';
+  const sentimentDetail=posCount>0&&negCount>0?`${posCount} favorable and ${negCount} constructive response${negCount>1?'s':'s'}`:(posCount>0?`${posCount} favorable response${posCount>1?'s':'s'}`:`${negCount} areas for enhancement`);
+  
+  return `Based on aggregated analysis of ${total} student feedback response${total>1?'s':''}, the cumulative rating is ${avgRating.toFixed(1)}/5. The feedback sentiment is ${overallSentiment}, with ${sentimentDetail}. The system has identified specific pedagogical enhancement opportunities detailed below.`;
+}
+
+function generateProblems(feedbackList,problemKeywords){
+  const result=[];
+  if(!problemKeywords.length)return result;
+  
+  const comments=feedbackList.filter(f=>f.comment).map(f=>f.comment.toLowerCase());
+  
+  const problemMappings={
+    'pace/speed':['fast','quickly','quick','rush','hurry','squeezed'],
+    'difficulty':['difficult','hard','challenging','tough','complex','complicated'],
+    'clarity':['confusing','confused','unclear','hard to understand'],
+    'engagement':['boring','dull','tedious'],
+    'accessibility':['skipped','too much','too many topics','incomplete'],
+    'explanation':['not explained','no explanation','unclear explanation']
+  };
+  
+  problemKeywords.slice(0,3).forEach(prob=>{
+    let description='';
+    
+    if(prob.word==='pace/speed'){
+      if(prob.count>=2)description=`Content delivery velocity has been flagged as excessive by ${prob.count} respondents, particularly in advanced topics. This temporal constraint impedes comprehensive concept mastery and student assimilation.`;
+      else description=`System identified instances where instructional velocity exceeds optimal learning pace, compromising student comprehension of complex theoretical frameworks.`;
+    } else if(prob.word==='difficulty'){
+      if(prob.count>=2)description=`Pedagogical complexity thresholds are not adequately scaffolded. ${prob.count} respondents indicated insufficient foundational support for advanced material. Enhanced progressive disclosure and worked examples would ameliorate comprehension.`;
+      else description=`Isolated feedback indicates elevated cognitive load for certain topic clusters. Supplementary instructional materials would strengthen student performance.`;
+    } else if(prob.word==='clarity'){
+      description=`System analysis indicates instructional clarity can be enhanced. ${prob.count} respondent${prob.count>1?'s':''} noted explanations requiring greater structural decomposition with illustrative exemplars.`;
+    } else if(prob.word==='engagement'){
+      description=`Interactive pedagogical elements require augmentation. ${prob.count} respondent${prob.count>1?'s':''} indicated suboptimal engagement levels. Implementing collaborative learning mechanisms would enhance cognitive involvement.`;
+    } else if(prob.word==='accessibility'){
+      description=`Curricular density analysis reveals content breadth exceeding optimal depth parameters. Curriculum restructuring to emphasize foundational concepts over comprehensive coverage is recommended.`;
+    } else if(prob.word==='explanation'){
+      description=`Instructional articulation requires enhancement. Integrating visual pedagogical aids and incremental examples would facilitate improved conceptual understanding.`;
+    }
+    
+    if(description)result.push(description);
+  });
+  
+  return result;
+}
+
+function generateStrengths(feedbackList,strengthKeywords){
+  const result=[];
+  if(!strengthKeywords.length)return result;
+  
+  const strengthMappings={
+    'clarity':['clear','easy to understand','well explained','simple'],
+    'engagement':['interesting','engaging','interactive','enjoyed','fun'],
+    'quality':['excellent','great','amazing','wonderful','best'],
+    'examples':['examples','diagrams','visual','visualization'],
+    'pace':['adequate pace','good pace','right speed','manageable']
+  };
+  
+  strengthKeywords.slice(0,3).forEach(str=>{
+    let description='';
+    const count=str.count;
+    
+    if(str.word==='clarity'){
+      description=`Instructional clarity demonstrates substantial effectiveness. ${count} respondent${count>1?'s':''} affirmed comprehensible concept articulation and logical structural presentation.`;
+    } else if(str.word==='engagement'){
+      description=`Pedagogical engagement metrics are favorable. ${count} respondent${count>1?'s':''} noted favorable interactive dynamics and cognitive stimulation, correlating positively with learning outcomes.`;
+    } else if(str.word==='quality'){
+      description=`Instructional excellence is consistently validated. ${count} respondent${count>1?'s':''} commended technical expertise and professional commitment in course delivery.`;
+    } else if(str.word==='examples'){
+      description=`Exemplification strategy proves highly effective. Theory-practice integration through illustrative scenarios and visual pedagogical materials strengthens conceptual acquisition.`;
+    } else if(str.word==='pace'){
+      description=`Instructional tempo optimization is achieved. Student feedback indicates appropriate cognitive load distribution, facilitating sustained comprehension without temporal constraints.`;
+    }
+    
+    if(description)result.push(description);
+  });
+  
+  return result;
+}
+
+function generateImprovements(feedbackList,problems,allRatings){
+  const result=[];
+  const avgRating=feedbackList.reduce((s,f)=>s+f.avgRating,0)/feedbackList.length;
+  
+  const topicRatings={
+    'Conceptual Clarity':[],
+    'Class Engagement':[],
+    'Your Accessibility':[],
+    'Syllabus Coverage':[],
+    'Overall Satisfaction':[]
+  };
+  
+  allRatings.forEach(ratings=>{
+    if(ratings){
+      topicRatings['Conceptual Clarity'].push(ratings[0]||0);
+      topicRatings['Class Engagement'].push(ratings[1]||0);
+      topicRatings['Your Accessibility'].push(ratings[2]||0);
+      topicRatings['Syllabus Coverage'].push(ratings[3]||0);
+      topicRatings['Overall Satisfaction'].push(ratings[4]||0);
+    }
+  });
+  
+  const weakAreas=Object.entries(topicRatings)
+    .map(([area,ratings])=>({area,avg:ratings.reduce((a,b)=>a+b,0)/(ratings.length||1)}))
+    .filter(x=>x.avg<3.5)
+    .sort((a,b)=>a.avg-b.avg);
+  
+  if(problems.length>0){
+    result.push(`Primary Enhancement Vector: System identified ${problems[0].toLowerCase()}. This recurring pattern represents the principal intervention opportunity requiring immediate pedagogical restructuring.`);
+  }
+  
+  if(weakAreas.length>0){
+    const area=weakAreas[0];
+    if(area.area==='Conceptual Clarity'){
+      result.push(`Instructional Design Optimization: Implement multi-layered pedagogical scaffolding with progressive complexity matrices. Employ exemplification strategies and visual cognitive aids to optimize comprehension thresholds.`);
+    } else if(area.area==='Class Engagement'){
+      result.push(`Engagement Architecture Enhancement: Augment instructional methodology with collaborative problem-solving paradigms. Incorporate case-based learning and synchronous interactive feedback mechanisms.`);
+    } else if(area.area==='Your Accessibility'){
+      result.push(`Support Infrastructure Expansion: Augment synchronous availability protocols. Implement asynchronous consultation modalities to ensure comprehensive student support coverage.`);
+    } else if(area.area==='Syllabus Coverage'){
+      result.push(`Curricular Timeline Restructuring: Implement depth-prioritized pedagogy emphasizing foundational mastery over comprehensive breadth. Establish prerequisite competency verification protocols.`);
+    }
+  }
+  
+  if(avgRating<3.5){
+    result.push(`Strategic Implementation: Prioritize recommended interventions within current academic cycle. Establish iterative feedback mechanisms for continuous pedagogical refinement and impact assessment.`);
+  } else {
+    result.push(`Performance Optimization: Current pedagogical framework demonstrates substantive effectiveness. Sustain implemented strategies while incrementally addressing identified enhancement vectors for excellence optimization.`);
+  }
+  
+  return result;
+}
+
+function extractTopics(comment){
+  const topics=[];
+  const keywords={
+    'Recursion':['recursion','recursive','backtracking','call stack'],
+    'Dynamic Programming':['dynamic programming','dp','memoization','tabulation'],
+    'Graphs':['graph','dfs','bfs','shortest path','dijkstra'],
+    'Linked Lists':['linked list','node','pointer','traversal'],
+    'Trees':['tree','binary tree','bst','traversal','inorder'],
+    'Arrays':['array','array','indexing','sorting'],
+    'Algorithms':['sorting','algorithm','time complexity','space complexity'],
+    'Hashing':['hash','hash table','hash map','collision']
+  };
+  
+  const lowerComment=comment.toLowerCase();
+  Object.entries(keywords).forEach(([topic,words])=>{
+    if(words.some(w=>lowerComment.includes(w))){
+      topics.push(topic);
+    }
+  });
+  
+  return topics.length>0?topics:[];
+}
+
+function renderAIStructured(d,total){
+  let html='';
+  
+  // AI Summary Report Box
+  html+=`<div style="background:linear-gradient(135deg,rgba(59,130,246,.08),rgba(99,102,241,.06));border:1px solid rgba(59,130,246,.15);border-radius:14px;padding:16px;margin-bottom:18px">
+    <div style="font-size:13px;color:var(--text);line-height:1.7">
+      📋 <b>AI Summary Report</b><br>
+      <span style="color:var(--text2);font-size:12px">Based on analysis of ${total} student feedback response${total>1?'s':''}, key learning difficulties and strengths have been identified. The insights below combine both quantitative ratings and qualitative comments to provide comprehensive feedback analysis.</span>
+    </div>
+  </div>`;
+  
+  // Top Problem Topic Highlight
+  if(d.topProblemTopic){
+    const problemDisplay=d.topProblemTopic.replace(/-/g,' ').charAt(0).toUpperCase()+d.topProblemTopic.replace(/-/g,' ').slice(1);
+    html+=`<div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-left:4px solid var(--red);border-radius:10px;padding:12px 14px;margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="font-size:18px">🚨</div>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--red)">Top Priority Issue</div>
+          <div style="font-size:12px;color:var(--text2);margin-top:2px">Most frequently mentioned: <b style="color:var(--red)">${problemDisplay}</b></div>
+        </div>
+      </div>
+    </div>`;
+  }
+  
+  // Overall Summary
+  if(d.overallSummary){
+    html+=`<div class="ai-section">
+      <div class="ai-section-title">📊 Analysis Overview</div>
+      <div class="ai-point">
+        <div class="ai-bullet"></div>
+        <div class="ai-point-text">${d.overallSummary}</div>
+      </div>
+    </div>`;
+  }
+  
+  // Key Problems Identified
+  if(d.problems&&d.problems.length>0){
+    html+=`<div class="ai-section">
+      <div class="ai-section-title">⚠️ Identified Enhancement Areas</div>`;
+    d.problems.forEach((problem,idx)=>{
+      html+=`<div class="ai-point">
+        <div class="ai-bullet red"></div>
+        <div class="ai-point-text"><b>Area ${idx+1}:</b> ${problem}</div>
+      </div>`;
+    });
+    html+=`</div>`;
+  }
+  
+  // Strengths of Teaching
+  if(d.strengths&&d.strengths.length>0){
+    html+=`<div class="ai-section">
+      <div class="ai-section-title">✅ Validated Pedagogical Strengths</div>`;
+    d.strengths.forEach((strength,idx)=>{
+      html+=`<div class="ai-point">
+        <div class="ai-bullet green"></div>
+        <div class="ai-point-text"><b>Strength ${idx+1}:</b> ${strength}</div>
+      </div>`;
+    });
+    html+=`</div>`;
+  }
+  
+  // Frequently Mentioned Topics
+  if(d.frequentTopics&&d.frequentTopics.length>0){
+    html+=`<div class="ai-section">
+      <div class="ai-section-title">📚 Frequently Mentioned Topics</div>
+      <div class="ai-point">
+        <div class="ai-bullet"></div>
+        <div class="ai-point-text">Students frequently discussed: <b>${d.frequentTopics.map(t=>`${t.name}`).join(', ')}</b> in their feedback. These topics received the most attention and may require additional focus or clarification.</div>
+      </div>
+    </div>`;
+  }
+  
+  // Suggested Improvements
+  if(d.improvements&&d.improvements.length>0){
+    html+=`<div class="ai-section">
+      <div class="ai-section-title">💡 Recommended Actions</div>`;
+    d.improvements.forEach((improvement,idx)=>{
+      const icon=improvement.includes('Priority')?'🎯':improvement.includes('Enhance')?'📚':improvement.includes('Boost')?'🎯':improvement.includes('Improve')?'🚪':improvement.includes('Better')?'📖':improvement.includes('Quick')?'⚡':'✅';
+      html+=`<div class="ai-point">
+        <div class="ai-bullet yellow"></div>
+        <div class="ai-point-text">${icon} ${improvement}</div>
+      </div>`;
+    });
+    html+=`</div>`;
+  }
+  
+  // Footer
+  html+=`<div style="text-align:center;padding:12px 0;margin-top:16px;border-top:1px solid var(--border);font-size:11px;color:var(--text3)">
+    ✨ Insight generated automatically using intelligent feedback analysis<br>
+    <span style="font-size:10px;margin-top:4px;display:block">Based on aggregated and anonymized student feedback.</span>
+  </div>`;
+  
+  document.getElementById('ai-structured').innerHTML=html||'<p style="color:var(--text2)">No data available for analysis.</p>';
+}
+
+// ════════════════════════════
+// ADMIN
+// ════════════════════════════
+function launchAdmin(){showScreen('screen-admin');admNav('depts',document.querySelector('#screen-admin .nav-item'));}
+function fillAdminDeptSels(){
+  ['ns-dept','nst-dept','nstu-dept'].forEach(id=>{
+    const el=document.getElementById(id);if(!el)return;
+    const v=el.value;el.innerHTML='<option value="">— Select —</option>';
+    getDepts().forEach(d=>{const o=document.createElement('option');o.value=d.id;o.textContent=`${d.code} — ${d.name}`;el.appendChild(o);});
+    if(v)el.value=v;
+  });
+  // fill class-year selector for subjects
+  const nsyear=document.getElementById('ns-year');
+  if(nsyear){const v=nsyear.value;nsyear.innerHTML='<option value="">— Select —</option>';getClasses().forEach(c=>{const cy=getYears().find(y=>y.classId===c.id);const o=document.createElement('option');o.value=cy?.id||'';o.textContent=c.name;nsyear.appendChild(o);});if(v)nsyear.value=v;}
+  // fill academic year selector
+  const ncly=document.getElementById('ncl-year');
+  if(ncly){const v=ncly.value;ncly.innerHTML='<option value="">— Select Academic Year —</option>';getYears().forEach(y=>{const o=document.createElement('option');o.value=y.id;o.textContent=y.name;ncly.appendChild(o);});if(v)ncly.value=v;}
+}
+function admNav(id,el){
+  document.querySelectorAll('#screen-admin .nav-item').forEach(n=>n.classList.remove('active'));
+  if(el)el.classList.add('active');
+  else document.querySelectorAll('#screen-admin .nav-item').forEach(n=>{if((n.getAttribute('onclick')||'').includes(`'${id}'`))n.classList.add('active');});
+  document.querySelectorAll('#screen-admin .sub-page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('adm-'+id).classList.add('active');
+  fillAdminDeptSels();
+  if(id==='depts')renderDepts();
+  if(id==='classes')renderClasses();
+  if(id==='years')renderYears();
+  if(id==='subjects'){
+    renderSubjects();
+    const deptSel=document.getElementById('ns-dept');
+    if(deptSel)deptSel.addEventListener('change',onSubjDeptChange);
+    const staffSel=document.getElementById('ns-staff');
+    if(staffSel)staffSel.innerHTML='<option value="">— Optional —</option>';
+  }
+  if(id==='staff')renderStaff();
+  if(id==='accounts')renderAccounts();
+  if(id==='stats')renderAdminStats();
+}
+
+// ── CUSTOM CONFIRM (replaces blocked confirm()) ──
+let _confirmFn=null;
+function showConfirm(msg,onOk,title='Confirm Delete'){
+  document.getElementById('confirm-title').textContent=title;
+  document.getElementById('confirm-msg').textContent=msg;
+  _confirmFn=onOk;
+  document.getElementById('confirm-modal').classList.add('open');
+}
+function closeConfirm(){document.getElementById('confirm-modal').classList.remove('open');_confirmFn=null;}
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('confirm-ok-btn').onclick=()=>{closeConfirm();if(_confirmFn)_confirmFn();};
+});
+
+// ── DEPARTMENTS ──
+function addDept(){
+  const name=document.getElementById('nd-name').value.trim(),code=document.getElementById('nd-code').value.trim().toUpperCase();
+  if(!name||!code){toast('❌ Enter name and code','err');return;}
+  const depts=getDepts();if(depts.find(d=>d.code===code)){toast('❌ Code already exists','err');return;}
+  depts.push({id:'d'+Date.now(),name,code});sSet('ep_depts',depts);
+  document.getElementById('nd-name').value='';document.getElementById('nd-code').value='';
+  renderDepts();fillAdminDeptSels();toast('✅ Department added!','ok');
+}
+function renderDepts(){
+  const depts=getDepts(),subjs=getSubjects(),staff=getStaff();
+  document.getElementById('dept-tbody').innerHTML=depts.map((d,i)=>`<tr data-id="${d.id}">
+    <td style="padding:11px 4px 11px 13px"><span class="drag-handle">⠿</span></td>
+    <td style="color:var(--text3)">${i+1}</td><td><b>${d.name}</b></td>
+    <td><span class="badge b-blue">${d.code}</span></td>
+    <td><span class="badge b-yellow">${subjs.filter(s=>s.deptId===d.id).length}</span></td>
+    <td><span class="badge b-green">${staff.filter(t=>t.deptId===d.id).length}</span></td>
+    <td><div style="display:flex;gap:5px">
+      <button class="btn btn-ghost" style="padding:4px 9px;font-size:11px" onclick="editDept('${d.id}')">✏️ Edit</button>
+      <button class="btn btn-red" style="padding:4px 9px;font-size:11px" onclick="deleteDept('${d.id}')">🗑️ Delete</button>
+    </div></td></tr>`).join('');
+  makeDraggable('dept-tbody','ep_depts',renderDepts,fillAdminDeptSels);
+}
+function deleteDept(id){showConfirm('Delete this department? Related subjects/staff may be affected.',()=>{sSet('ep_depts',getDepts().filter(d=>d.id!==id));renderDepts();fillAdminDeptSels();toast('✅ Department deleted','ok');});}
+function editDept(id){
+  const d=getDepts().find(x=>x.id===id);
+  openModal('Edit Department',`<div class="field"><label>Name</label><input type="text" id="ed-n" value="${d.name}"></div><div class="field"><label>Code</label><input type="text" id="ed-c" value="${d.code}"></div>`,()=>{
+    const name=document.getElementById('ed-n').value.trim(),code=document.getElementById('ed-c').value.trim().toUpperCase();
+    if(!name||!code){toast('❌ Fill all fields','err');return;}
+    sSet('ep_depts',getDepts().map(x=>x.id===id?{...x,name,code}:x));
+    renderDepts();fillAdminDeptSels();closeModal();toast('✅ Updated!','ok');
+  });
+}
+
+// ── CLASS YEARS ──
+function addClass(){
+  const name=document.getElementById('ncl-name').value.trim(),yearId=document.getElementById('ncl-year').value;
+  if(!name||!yearId){toast('❌ Enter class name and select academic year','err');return;}
+  const classes=getClasses();classes.push({id:'c'+Date.now(),name,yearId});sSet('ep_classes',classes);
+  document.getElementById('ncl-name').value='';document.getElementById('ncl-year').value='';
+  renderClasses();toast('✅ Class year added!','ok');
+}
+function renderClasses(){
+  const classes=getClasses(),fb=getFeedback();
+  document.getElementById('class-tbody').innerHTML=classes.map((c,i)=>{
+    const y=yearById(c.yearId);
+    return `<tr data-id="${c.id}">
+      <td style="padding:11px 4px 11px 13px"><span class="drag-handle">⠿</span></td>
+      <td style="color:var(--text3)">${i+1}</td><td><b>${c.name}</b></td>
+      <td><span class="badge b-blue">${y.name||'—'}</span></td>
+      <td><span class="badge b-yellow">${fb.filter(f=>f.classId===c.id).length} feedback</span></td>
+      <td><div style="display:flex;gap:5px">
+        <button class="btn btn-ghost" style="padding:4px 9px;font-size:11px" onclick="editClass('${c.id}')">✏️ Edit</button>
+        <button class="btn btn-red" style="padding:4px 9px;font-size:11px" onclick="deleteClass('${c.id}')">🗑️ Delete</button>
+      </div></td></tr>`;
+  }).join('');
+  makeDraggable('class-tbody','ep_classes',renderClasses);
+}
+function deleteClass(id){showConfirm('Delete this class year?',()=>{sSet('ep_classes',getClasses().filter(c=>c.id!==id));renderClasses();toast('✅ Deleted','ok');});}
+function editClass(id){
+  const c=classById(id),years=getYears();
+  openModal('Edit Class Year',`<div class="field"><label>Class Name</label><input type="text" id="ecl-n" value="${c.name}"></div>
+    <div class="field"><label>Linked Academic Year</label><select id="ecl-y">${years.map(y=>`<option value="${y.id}" ${y.id===c.yearId?'selected':''}>${y.name}</option>`).join('')}</select></div>`,()=>{
+    const name=document.getElementById('ecl-n').value.trim(),yearId=document.getElementById('ecl-y').value;
+    if(!name||!yearId){toast('❌ Fill all','err');return;}
+    sSet('ep_classes',getClasses().map(x=>x.id===id?{...x,name,yearId}:x));
+    renderClasses();closeModal();toast('✅ Updated!','ok');
+  });
+}
+
+// ── ACADEMIC YEARS ──
+function addYear(){
+  const name=document.getElementById('ny-name').value.trim();
+  if(!name){toast('❌ Enter year label','err');return;}
+  const years=getYears();if(years.find(y=>y.name===name)){toast('❌ Year already exists','err');return;}
+  years.push({id:'y'+Date.now(),name});sSet('ep_years',years);
+  document.getElementById('ny-name').value='';renderYears();fillAdminDeptSels();toast('✅ Academic year added!','ok');
+}
+function renderYears(){
+  const years=getYears(),fb=getFeedback(),classes=getClasses();
+  document.getElementById('year-tbody').innerHTML=years.map((y,i)=>{
+    const linkedClasses=classes.filter(c=>c.yearId===y.id).map(c=>c.name);
+    return `<tr data-id="${y.id}">
+      <td style="padding:11px 4px 11px 13px"><span class="drag-handle">⠿</span></td>
+      <td style="color:var(--text3)">${i+1}</td><td><b>${y.name}</b></td>
+      <td style="font-size:12px;color:var(--text2)">${linkedClasses.length?linkedClasses.join(', '):'<span style="color:var(--text3)">None linked</span>'}</td>
+      <td><span class="badge b-blue">${fb.filter(f=>f.yearId===y.id).length}</span></td>
+      <td><div style="display:flex;gap:5px">
+        <button class="btn btn-ghost" style="padding:4px 9px;font-size:11px" onclick="editYear('${y.id}')">✏️ Edit</button>
+        <button class="btn btn-red" style="padding:4px 9px;font-size:11px" onclick="deleteYear('${y.id}')">🗑️ Delete</button>
+      </div></td></tr>`;
+  }).join('');
+  makeDraggable('year-tbody','ep_years',renderYears);
+}
+function deleteYear(id){showConfirm('Delete this academic year?',()=>{sSet('ep_years',getYears().filter(y=>y.id!==id));renderYears();toast('✅ Deleted','ok');});}
+function editYear(id){
+  const y=getYears().find(x=>x.id===id);
+  openModal('Edit Academic Year',`<div class="field"><label>Year Label</label><input type="text" id="ey-n" value="${y.name}"></div>`,()=>{
+    const name=document.getElementById('ey-n').value.trim();
+    if(!name){toast('❌ Enter year','err');return;}
+    sSet('ep_years',getYears().map(x=>x.id===id?{...x,name}:x));
+    renderYears();closeModal();toast('✅ Updated!','ok');
+  });
+}
+
+// ── SUBJECTS ──
+function fillSubjDeptSel(){
+  getDepts().forEach(d=>{const o=document.createElement('option');o.value=d.id;o.textContent=d.code+' — '+d.name;document.getElementById('ns-dept').appendChild(o);});
+}
+function fillSubjYearSel(){
+  getClasses().forEach(c=>{const o=document.createElement('option');o.value=getYears().find(y=>y.classId===c.id)?.id||'';o.textContent=c.name;document.getElementById('ns-year').appendChild(o);});
+}
+function onSubjDeptChange(){
+  const deptId=document.getElementById('ns-dept').value;
+  const staffSel=document.getElementById('ns-staff');
+  staffSel.innerHTML='<option value="">— Optional —</option>';
+  if(!deptId)return;
+  getStaff().filter(t=>t.deptId===deptId).forEach(t=>{const o=document.createElement('option');o.value=t.id;o.textContent=t.name;staffSel.appendChild(o);});
+}
+function addSubject(){
+  const deptId=document.getElementById('ns-dept').value,yearId=document.getElementById('ns-year').value,name=document.getElementById('ns-name').value.trim();
+  if(!deptId||!yearId||!name){toast('❌ Select department, year, and enter name','err');return;}
+  const s=getSubjects();s.push({id:'s'+Date.now(),name,deptId,yearId});sSet('ep_subjects',s);
+  document.getElementById('ns-name').value='';renderSubjects();toast('✅ Subject added!','ok');
+}
+function renderSubjects(){
+  const subjs=getSubjects(),staff=getStaff();
+  document.getElementById('subj-tbody').innerHTML=subjs.map((s,i)=>{
+    const dept=deptById(s.deptId),year=yearById(s.yearId),assignedStaff=staff.filter(t=>(t.subjectIds||[]).includes(s.id)).map(t=>t.name);
+    return `<tr data-id="${s.id}">
+      <td style="padding:11px 4px 11px 13px"><span class="drag-handle">⠿</span></td>
+      <td style="color:var(--text3)">${i+1}</td><td><b>${s.name}</b></td>
+      <td><span class="badge b-blue">${dept.code||'—'}</span></td>
+      <td><span class="badge b-purple">${year.name||'—'}</span></td>
+      <td style="font-size:12px;color:var(--text2)">${assignedStaff.length?assignedStaff.join(', '):'<span style="color:var(--text3)">Unassigned</span>'}</td>
+      <td><div style="display:flex;gap:5px">
+        <button class="btn btn-ghost" style="padding:4px 9px;font-size:11px" onclick="editSubject('${s.id}')">✏️ Edit</button>
+        <button class="btn btn-red" style="padding:4px 9px;font-size:11px" onclick="deleteSubject('${s.id}')">🗑️ Delete</button>
+      </div></td></tr>`;
+  }).join('');
+  makeDraggable('subj-tbody','ep_subjects',renderSubjects);
+}
+function deleteSubject(id){showConfirm('Delete this subject?',()=>{sSet('ep_subjects',getSubjects().filter(s=>s.id!==id));sSet('ep_staff',getStaff().map(t=>({...t,subjectIds:(t.subjectIds||[]).filter(sid=>sid!==id)})));renderSubjects();toast('✅ Deleted','ok');});}
+function editSubject(id){
+  const s=subjById(id),depts=getDepts(),years=getYears(),staff=getStaff(),deptStaff=staff.filter(t=>t.deptId===s.deptId);
+  openModal('Edit Subject',`<div class="field"><label>Name</label><input type="text" id="es-n" value="${s.name}"></div>
+    <div class="field"><label>Department</label><select id="es-d" onchange="updateSubjStaffOpts('${id}')">${depts.map(d=>`<option value="${d.id}" ${d.id===s.deptId?'selected':''}>${d.code} — ${d.name}</option>`).join('')}</select></div>
+    <div class="field"><label>Class Year</label><select id="es-y">${years.map(y=>`<option value="${y.id}" ${y.id===s.yearId?'selected':''}>${y.name}</option>`).join('')}</select></div>`,()=>{
+    const name=document.getElementById('es-n').value.trim(),deptId=document.getElementById('es-d').value,yearId=document.getElementById('es-y').value;
+    if(!name||!deptId||!yearId){toast('❌ Fill required fields','err');return;}
+    sSet('ep_subjects',getSubjects().map(x=>x.id===id?{...x,name,deptId,yearId}:x));
+    renderSubjects();closeModal();toast('✅ Updated!','ok');
+  });
+}
+
+// ── STAFF ──
+function loadStaffSubjSel(){
+  const deptId=document.getElementById('nst-dept').value,sel=document.getElementById('nst-subjs');sel.innerHTML='';
+  if(!deptId){sel.innerHTML='<option disabled>Select department first</option>';return;}
+  const subjs=getSubjects().filter(s=>s.deptId===deptId);
+  if(!subjs.length){sel.innerHTML='<option disabled>No subjects in this department</option>';return;}
+  // Group subjects by class year
+  const grouped={};subjs.forEach(s=>{const y=yearById(s.yearId).name;if(!grouped[y])grouped[y]=[];grouped[y].push(s);});
+  // Create optgroups for each year
+  getClasses().forEach(c=>{const cy=getYears().find(y=>y.classId===c.id);const ySubjs=grouped[c.name]||[];if(ySubjs.length){const og=document.createElement('optgroup');og.label=c.name;ySubjs.forEach(s=>{const o=document.createElement('option');o.value=s.id;o.textContent=s.name;og.appendChild(o);});sel.appendChild(og);}});
+}
+
+function addStaff(){
+  const name=document.getElementById('nst-name').value.trim(),username=document.getElementById('nst-user').value.trim().toLowerCase();
+  const password=document.getElementById('nst-pass').value.trim(),deptId=document.getElementById('nst-dept').value;
+  const subjectIds=[...document.getElementById('nst-subjs').selectedOptions].map(o=>o.value);
+  if(!name||!username||!password||!deptId){toast('❌ Fill all required fields','err');return;}
+  const staff=getStaff();if(staff.find(t=>t.username===username)){toast('❌ Username already exists','err');return;}
+  staff.push({id:'t'+Date.now(),name,username,password,deptId,subjectIds});sSet('ep_staff',staff);
+  ['nst-name','nst-user'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('nst-pass').value='teach123';document.getElementById('nst-dept').value='';
+  document.getElementById('nst-subjs').innerHTML='<option disabled>Select department first</option>';
+  renderStaff();renderDemoCreds();toast('✅ Staff added!','ok');
+}
+function renderStaff(){
+  const staff=getStaff();
+  document.getElementById('staff-tbody').innerHTML=staff.map((t,i)=>{
+    const dept=deptById(t.deptId),subjs=(t.subjectIds||[]).map(sid=>subjById(sid).name||sid);
+    return `<tr data-id="${t.id}">
+      <td style="padding:11px 4px 11px 13px"><span class="drag-handle">⠿</span></td>
+      <td style="color:var(--text3)">${i+1}</td><td><b>${t.name}</b></td>
+      <td><span class="badge b-blue">${t.username}</span></td>
+      <td>${dept.code||'—'}</td>
+      <td style="font-size:12px;color:var(--text2)">${subjs.join(', ')||'<span style="color:var(--text3)">None</span>'}</td>
+      <td><div style="display:flex;gap:5px">
+        <button class="btn btn-ghost" style="padding:4px 9px;font-size:11px" onclick="editStaff('${t.id}')">✏️ Edit</button>
+        <button class="btn btn-red" style="padding:4px 9px;font-size:11px" onclick="deleteStaff('${t.id}')">🗑️ Delete</button>
+      </div></td></tr>`;
+  }).join('');
+  makeDraggable('staff-tbody','ep_staff',renderStaff,renderDemoCreds);
+}
+function deleteStaff(id){showConfirm('Delete this staff member?',()=>{sSet('ep_staff',getStaff().filter(t=>t.id!==id));renderStaff();renderDemoCreds();toast('✅ Deleted','ok');});}
+function editStaff(id){
+  const t=staffById(id),depts=getDepts(),subjsForDept=getSubjects().filter(s=>s.deptId===t.deptId);
+  openModal('Edit Staff',`<div class="field"><label>Full Name</label><input type="text" id="et-n" value="${t.name}"></div>
+    <div class="field"><label>Password</label><input type="text" id="et-p" value="${t.password}"></div>
+    <div class="field"><label>Department</label><select id="et-d">${depts.map(d=>`<option value="${d.id}" ${d.id===t.deptId?'selected':''}>${d.code} — ${d.name}</option>`).join('')}</select></div>
+    <div class="field"><label>Subjects (Ctrl/Cmd for multiple)</label>
+      <select id="et-s" multiple style="min-height:80px;width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:8px;color:var(--text);outline:none;font-size:13px;">
+        ${subjsForDept.map(s=>`<option value="${s.id}" ${(t.subjectIds||[]).includes(s.id)?'selected':''}>${s.name}</option>`).join('')}
+      </select></div>`,()=>{
+    const name=document.getElementById('et-n').value.trim(),pass=document.getElementById('et-p').value.trim(),deptId=document.getElementById('et-d').value;
+    const subjectIds=[...document.getElementById('et-s').selectedOptions].map(o=>o.value);
+    if(!name||!pass||!deptId){toast('❌ Fill all','err');return;}
+    sSet('ep_staff',getStaff().map(x=>x.id===id?{...x,name,password:pass,deptId,subjectIds}:x));
+    renderStaff();renderDemoCreds();closeModal();toast('✅ Updated!','ok');
+  });
+}
+
+// ── STUDENTS ──
+function addStudent(){
+  const name=document.getElementById('nstu-name').value.trim(),roll=document.getElementById('nstu-roll').value.trim().toUpperCase();
+  const password=document.getElementById('nstu-pass').value.trim(),deptId=document.getElementById('nstu-dept').value;
+  if(!name||!roll||!password||!deptId){toast('❌ Fill all fields','err');return;}
+  const students=getStudents();if(students.find(s=>s.username===roll)){toast('❌ Roll number already exists','err');return;}
+  students.push({id:'u'+Date.now(),name,username:roll,password,rollNo:roll,deptId});sSet('ep_students',students);
+  ['nstu-name','nstu-roll'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('nstu-pass').value='pass123';document.getElementById('nstu-dept').value='';
+  renderAccounts();renderDemoCreds();toast('✅ Student added!','ok');
+}
+function renderAccounts(){
+  const students=getStudents();
+  document.getElementById('acct-tbody').innerHTML=students.map((s,i)=>{
+    const dept=deptById(s.deptId);
+    return `<tr data-id="${s.id}">
+      <td style="padding:11px 4px 11px 13px"><span class="drag-handle">⠿</span></td>
+      <td style="color:var(--text3)">${i+1}</td><td><b>${s.name}</b></td>
+      <td><span class="badge b-blue">${s.rollNo}</span></td>
+      <td>${dept.code||'—'}</td>
+      <td><div style="display:flex;gap:5px">
+        <button class="btn btn-ghost" style="padding:4px 9px;font-size:11px" onclick="editStudent('${s.id}')">✏️ Edit</button>
+        <button class="btn btn-red" style="padding:4px 9px;font-size:11px" onclick="deleteStudent('${s.id}')">🗑️ Delete</button>
+      </div></td></tr>`;
+  }).join('');
+  makeDraggable('acct-tbody','ep_students',renderAccounts,renderDemoCreds);
+}
+function deleteStudent(id){showConfirm('Delete this student account?',()=>{sSet('ep_students',getStudents().filter(s=>s.id!==id));renderAccounts();renderDemoCreds();toast('✅ Deleted','ok');});}
+function editStudent(id){
+  const s=getStudents().find(x=>x.id===id),depts=getDepts();
+  openModal('Edit Student',`<div class="field"><label>Full Name</label><input type="text" id="estu-n" value="${s.name}"></div>
+    <div class="field"><label>Password</label><input type="text" id="estu-p" value="${s.password}"></div>
+    <div class="field"><label>Department</label><select id="estu-d">${depts.map(d=>`<option value="${d.id}" ${d.id===s.deptId?'selected':''}>${d.code} — ${d.name}</option>`).join('')}</select></div>`,()=>{
+    const name=document.getElementById('estu-n').value.trim(),pass=document.getElementById('estu-p').value.trim(),deptId=document.getElementById('estu-d').value;
+    if(!name||!pass||!deptId){toast('❌ Fill all','err');return;}
+    sSet('ep_students',getStudents().map(x=>x.id===id?{...x,name,password:pass,deptId}:x));
+    renderAccounts();renderDemoCreds();closeModal();toast('✅ Updated!','ok');
+  });
+}
+
+// ── ADMIN STATS ──
+function renderAdminStats(){
+  const fb=getFeedback();
+  document.getElementById('adm-tfb').textContent=fb.length;document.getElementById('adm-tstu').textContent=getStudents().length;
+  document.getElementById('adm-tstaff').textContent=getStaff().length;document.getElementById('adm-tdept').textContent=getDepts().length;
+  const lbl=['Clarity','Engage','Access','Syllabus','Overall'],el=document.getElementById('adm-fb-all');
+  el.innerHTML='<div style="font-family:Syne,sans-serif;font-size:14px;font-weight:700;margin-bottom:14px">All Feedback in System</div>'+
+    (fb.length?[...fb].reverse().map(f=>{
+      const s=f.avgRating>=4?'pos':f.avgRating>=3?'neu':'neg',c=s==='pos'?'b-green':s==='neg'?'b-red':'b-blue';
+      return `<div class="fb-item"><div class="fb-hdr">
+        <div class="fb-stu"><div class="fb-av">${f.studentName[0]}</div><div><div class="fb-nm">${f.studentName}</div><div class="fb-rl">${f.rollNo}</div></div></div>
+        <div style="text-align:right"><span class="badge ${c}">${s==='pos'?'✅':'❌'} ${f.avgRating}/5</span><div class="fb-time" style="margin-top:3px">${fmtTime(f.time)}</div></div>
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin-bottom:5px">📚 ${subjById(f.subjectId).name||'—'} · 👨‍🏫 ${staffById(f.staffId).name||'—'} · 🏫 ${classById(f.classId).name||'—'} · 📅 ${yearById(f.yearId).name||'—'}</div>
+      <div class="fb-chips">${lbl.map((l,i)=>`<div class="fb-chip">${l}: <span class="v">${f.ratings[i]??'—'}/5</span></div>`).join('')}</div>
+      ${f.comment?`<div class="fb-comment">"${f.comment}"</div>`:''}</div>`;
+    }).join(''):'<div class="empty-state"><div class="eico">📭</div>No feedback yet</div>');
+}
+
+// ════════════════════════════
+// DRAG & DROP ENGINE
+// ════════════════════════════
+function makeDraggable(tbodyId,storageKey,renderFn,afterFn){
+  const tbody=document.getElementById(tbodyId);if(!tbody)return;
+  let dragSrc=null;
+  tbody.querySelectorAll('tr[data-id]').forEach(row=>{
+    row.setAttribute('draggable','false');
+    const handle=row.querySelector('.drag-handle');
+    if(handle){
+      handle.addEventListener('mousedown',()=>row.setAttribute('draggable','true'));
+      document.addEventListener('mouseup',()=>{if(!dragSrc)row.setAttribute('draggable','false');},{once:true});
+    }
+    row.addEventListener('dragstart',e=>{
+      if(row.getAttribute('draggable')!=='true'){e.preventDefault();return;}
+      dragSrc=row;row.classList.add('dragging');
+      e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',row.dataset.id);
+    });
+    row.addEventListener('dragend',()=>{row.setAttribute('draggable','false');row.classList.remove('dragging');dragSrc=null;tbody.querySelectorAll('tr').forEach(r=>r.classList.remove('drag-over-top','drag-over-bot'));});
+    row.addEventListener('dragover',e=>{e.preventDefault();tbody.querySelectorAll('tr').forEach(r=>r.classList.remove('drag-over-top','drag-over-bot'));if(row!==dragSrc){const rect=row.getBoundingClientRect(),mid=rect.top+rect.height/2;row.classList.add(e.clientY<mid?'drag-over-top':'drag-over-bot');}});
+    row.addEventListener('dragleave',()=>row.classList.remove('drag-over-top','drag-over-bot'));
+    row.addEventListener('drop',e=>{
+      e.preventDefault();e.stopPropagation();
+      if(!dragSrc||dragSrc===row)return;
+      tbody.querySelectorAll('tr').forEach(r=>r.classList.remove('drag-over-top','drag-over-bot'));
+      const rect=row.getBoundingClientRect(),insertBefore=e.clientY<(rect.top+rect.height/2);
+      const data=sGet(storageKey)||[];
+      const fromId=dragSrc.dataset.id,toId=row.dataset.id;
+      const fromIdx=data.findIndex(x=>x.id===fromId),toIdx=data.findIndex(x=>x.id===toId);
+      if(fromIdx===-1||toIdx===-1)return;
+      const[moved]=data.splice(fromIdx,1);
+      const newTo=data.findIndex(x=>x.id===toId);
+      data.splice(insertBefore?newTo:newTo+1,0,moved);
+      sSet(storageKey,data);renderFn();if(afterFn)afterFn();
+      toast('✅ Order saved','ok');
+    });
+  });
+}
+
+// ════════════════════════════
+// MODALS
+// ════════════════════════════
+function openModal(title,body,onSave){
+  document.getElementById('modal-title').textContent=title;document.getElementById('modal-body').innerHTML=body;
+  document.getElementById('modal-save-btn').onclick=onSave;document.getElementById('edit-modal').classList.add('open');
+}
+function closeModal(){document.getElementById('edit-modal').classList.remove('open');}
+
+// ════════════════════════════
+// UTILS
+// ════════════════════════════
+function fmtTime(iso){
+  const d=new Date(iso),now=new Date(),diff=Math.floor((now-d)/1000);
+  if(diff<60)return'Just now';if(diff<3600)return`${Math.floor(diff/60)}m ago`;
+  if(diff<86400)return`${Math.floor(diff/3600)}h ago`;
+  return d.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+}
+function toast(msg,type='ok'){
+  const t=document.getElementById('toast');t.textContent=msg;t.className=`toast show ${type}`;setTimeout(()=>t.className='toast',3200);
+}
+
+// ════════════════════════════
+// INIT
+// ════════════════════════════
+document.addEventListener('DOMContentLoaded',()=>{
+  initData();
+  renderDemoCreds();
+  document.getElementById('confirm-ok-btn').onclick=()=>{closeConfirm();if(_confirmFn)_confirmFn();};
+});
+</script>
+</body>
+</html>
