@@ -68,10 +68,11 @@ EduPulse helps institutions to:
 ## 👨‍💻 Authors  
 
 Harishraj K
-Hariharasudhan C
-Kamalesh B 
-Mathankumar M
-Rahul K
+
+Hariharasudhan C,
+Kamalesh B, 
+Mathankumar M,
+Rahul K.
 
 [2nd Year AI & DS]
 [Kings College of Engineering]
