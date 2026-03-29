@@ -79,6 +79,22 @@ EduPulse helps institutions to:
 
 ---
 
+## 🔮 Future Enhancements  
+
+- 🤖 Integration of Advanced Machine Learning Models for accurate sentiment detection  
+- 📊 Real-time analytics dashboard with deeper insights and predictions  
+- 🌐 Backend integration with database (Firebase / Node.js)  
+- 📱 Mobile-friendly responsive design improvements  
+- 🔐 Secure authentication system for students and staff  
+- 🧠 NLP-based feedback understanding (beyond keyword analysis)  
+- ☁️ Cloud deployment for scalability and performance  
+- 🏆 Teacher Leaderboard based on student feedback and performance metrics  
+- 📄 Downloadable Reports (PDF/Excel) for feedback analysis and insights  
+
+> This project has strong potential to evolve into a full-scale academic feedback intelligence platform.
+
+---
+
 ## 👨‍💻 Authors  
 
 Harishraj K
