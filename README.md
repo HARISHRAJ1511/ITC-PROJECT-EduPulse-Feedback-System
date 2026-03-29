@@ -41,7 +41,7 @@ Run the HTML file locally to view the project.
 
 ## 👨‍💻 Author
 
-Harish Raj  
+Harishraj K 
 ITC Project Submission
 
 ---
