@@ -49,9 +49,23 @@ EduPulse is an **AI-powered student feedback analysis system** designed to detec
 
 ## 🛠️ Tech Stack  
 
-- HTML  
-- CSS  
-- JavaScript  
+### 🌐 Frontend Development  
+- HTML5 (Semantic Structure & Layout)  
+- CSS3 (Responsive Design, Flexbox, Styling)  
+- JavaScript (Dynamic UI, DOM Manipulation, Logic Handling)  
+
+### 🤖 AI & Logic Implementation  
+- Rule-Based Sentiment Analysis  
+- Keyword Classification Techniques  
+- Feedback Categorization Algorithms  
+
+### 📊 Data Handling & Visualization  
+- Dynamic Data Processing  
+- Real-time Feedback Analysis  
+- Structured Data Representation  
+
+### 🚀 Deployment  
+- GitHub Pages (Live Website Hosting)   
 
 ---
 
